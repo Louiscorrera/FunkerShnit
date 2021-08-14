@@ -2,7 +2,7 @@
 #define EDITORSTATE_H
 
 
-#include "TileMap.h"
+
 #include "PauseState.h"
 
 class EditorState : public State
@@ -22,6 +22,7 @@ private:
 	sf::Texture tileMapTextureSheet;
 	sf::SoundBuffer buffer;
 	sf::Sound click;
+	sf::Music mainMusic;
 
 	/* Errors */
 	sf::Text text;

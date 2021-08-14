@@ -2,6 +2,7 @@
 #define TILEMAP_H
 
 #include "Tile.h"
+#include "Player.h"
 
 
 class TileMap
@@ -10,7 +11,7 @@ private:
 	/**** DATA MEMBERS ****/
 
 	/* Storage */
-	std::vector<std::vector<std::vector<Tile*> > > tileMap;
+	std::vector<std::vector<std::vector<std::vector<Tile*> > > > tileMap;
 
 	/* Tile Textures */
 	sf::Texture tileTextureSheet;
@@ -20,10 +21,12 @@ private:
 	float maxSizeX;
 	float maxSizeY;
 	float maxLayers;
+	float maxTiles;
 	float gridSizeF;
 
 	/* Map Updates */
 	bool overWriteEnabled;
+	bool collisionEnabled;
 
 	/* Key Timer */
 	float keyTimer;
@@ -45,7 +48,9 @@ public:
 
 	/**** ACCESSORS ****/
 	void toggleOverwrite();
+	void toggleCollision();
 	const bool& getOverWrite() const;
+	const bool& getCollision() const;
 	
 
 	/**** METHODS ****/
@@ -56,12 +61,13 @@ public:
 	/*** Updates ***/
 	void Update();
 
-	bool addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector);
+	bool addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, bool collision = false);
 	bool removeTile(const float& pos_x, const float& pos_y, const float& layer);
 	void clearCurrentMap();
+	void checkTileCollision(const float& dt, Entity* entity = NULL);
 
 	/*** Renders ***/
-	void Render(sf::RenderTarget& target);
+	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL);
 };
 
 

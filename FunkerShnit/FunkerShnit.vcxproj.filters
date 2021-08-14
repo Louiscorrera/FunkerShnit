@@ -31,6 +31,9 @@
     <Filter Include="TileMap">
       <UniqueIdentifier>{1d8142c3-2ec9-4842-a9ff-6c025157f93f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{d509cdde-ec02-4932-965f-d0befbf24af5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,14 +45,8 @@
     <ClCompile Include="Card.cpp">
       <Filter>Game Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Deck.cpp">
-      <Filter>Game Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="Library.cpp">
-      <Filter>Game Objects</Filter>
     </ClCompile>
     <ClCompile Include="State.cpp">
       <Filter>States</Filter>
@@ -75,18 +72,36 @@
     <ClCompile Include="PauseState.cpp">
       <Filter>States</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>States</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="HitboxComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Game Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Game Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Sword.cpp">
+      <Filter>Game Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Card.h">
-      <Filter>Game Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Deck.h">
-      <Filter>Game Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Library.h">
       <Filter>Game Objects</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
@@ -115,6 +130,30 @@
     </ClInclude>
     <ClInclude Include="PauseState.h">
       <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>States</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="HitboxComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Game Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Sword.h">
+      <Filter>Game Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -51,7 +51,7 @@ void EditorState::initTileMap()
 	this->tileMap = new TileMap(100.f, 100.f, 1.f, this->grifSizeF);
 
 	/* Init tile map texture sheet */
-	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet2.png"))
+	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/grassandtilesheet.png"))
 	{
 		throw "ERROR::InitTileMap() Could not load tile map texture sheet";
 	}
@@ -81,7 +81,7 @@ void EditorState::initGui()
 	this->initButtons();
 
 	/* Inits tile map texure selector interface */
-	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 450.f, 100.f, this->grifSizeF, &this->tileMapTextureSheet, *this->font, *this->color);
+	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 450.f, 500.f, this->grifSizeF, &this->tileMapTextureSheet, *this->font, *this->color);
 }
 
 void EditorState::initView()
@@ -102,8 +102,13 @@ void EditorState::initSounds()
 	{
 		throw "ERROR::InitSounds()::EDITORSTATE could not load one or more of the sound buffers ";
 	}
+	if (!this->mainMusic.openFromFile("Resources/Sound/editorstate_mainmusic.wav"))
+	{
+		throw "ERROR::InitSounds()::EDITORSTATE could not load one or more of the sound buffers ";
+	}
 
 	this->click.setBuffer(this->buffer);
+	
 }
 
 
@@ -116,6 +121,9 @@ EditorState::EditorState(sf::RenderWindow* window, std::map<std::string, int>* s
 	this->initGui();
 	this->initPauseMenu();
 	this->initSounds();
+
+	this->keyTime = 0.f;
+	this->keyTimeMax = 15.f;
 	
 }
 
@@ -133,11 +141,20 @@ void EditorState::Update(const float& dt)
 
 	if (this->pauseMenu->getPaused() == true)
 	{
+		this->mainMusic.pause();
 		this->pauseMenu->editorUpdate(dt, static_cast<sf::Vector2f>(this->mousePosWindow));
 		this->updatePauseMenu();
 	}
 	else
 	{
+		if (this->mainMusic.getStatus() != sf::Music::Playing)
+		{
+			this->mainMusic.setVolume(40.f);
+			this->mainMusic.setLoop(true);
+			this->mainMusic.play();
+		}
+
+		
 		this->updateMousePos(&this->mainView);
 		this->updateKeytime(dt);
 		this->updateView();
@@ -162,22 +179,38 @@ void EditorState::updateEditorInput()
 		if (this->mousePosWindow.x > 100 || this->mousePosWindow.y > 50) /* If the cursor is not within the bounds of the "Hide/Show" button, enable adding/removing tiles()()*/
 		{
 			/* If left mouse is clicked attempt to add tile */
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-
-				/* Display tile added confirmation message if tile was added */
-				if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector))
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->getKeyTime())
+			{ 
+				/* Check if collision is enabled, add a collision tile if so */
+				if (this->tileMap->getCollision())
 				{
-					this->click.play(); 
-					this->text.setString("Tile Added!");
+					/* Display tile added confirmation message if tile was added */
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true))
+					{
+						this->click.play();
+						this->text.setString("Tile Added!");
+					}
+					else /* Display tile can't be added message if tile is full */
+					{
+						this->text.setString("Tile Full!");
+					}
 				}
-				else /* Display tile can't be added message if tile is full */
+				else /* Check if collision is disabled, add a regular tile (non-collision) if so */
 				{
-					this->text.setString("Tile Full!");
+					/* Display tile added confirmation message if tile was added */
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector))
+					{
+						this->click.play();
+						this->text.setString("Tile Added!");
+					}
+					else /* Display tile can't be added message if tile is full */
+					{
+						this->text.setString("Tile Full!");
+					}
 				}
 
 			}
-			else  if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+			else  if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && this->getKeyTime())
 			{
 				/* Display tile removed confirmation message if tile was removed */
 				if (this->tileMap->removeTile(this->mousePosGrid.x, this->mousePosGrid.y, 0))
@@ -200,10 +233,20 @@ void EditorState::updateEditorInput()
 		this->pauseMenu->togglePaused();
 	}
 
+	/* check if the quit button has been pressed, end game state if so */
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("CLOSE"))) && this->getKeyTime())
+	{
+		this->endState();
+	}
+
 	/* Toggle tile map overwrite capabilities */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_OVERWRITE"))) && this->getKeyTime())
 	{
 		this->tileMap->toggleOverwrite();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_COLLISION"))) && this->getKeyTime())
+	{
+		this->tileMap->toggleCollision();
 	}
 
 
@@ -262,7 +305,8 @@ void EditorState::updateMouseTileInfo()
 	std::stringstream ss;
 
 	ss << "(" << this->mousePosGrid.x << ", " << this->mousePosGrid.y << ")" << 
-		"\n" << "Overwrite: " << ((this->tileMap->getOverWrite()) ? "Enabled" : "Disabled");
+		"\n" << "Overwrite: " << ((this->tileMap->getOverWrite()) ? "Enabled" : "Disabled") << 
+		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled");
 
 	this->mouseTileInfo.setString(ss.str());
 	this->mouseTileInfo.setPosition(this->mousePosWindow.x + 60.f, this->mousePosWindow.y);

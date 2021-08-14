@@ -178,7 +178,7 @@ void Game::updateSFMLEvents()
 		switch (this->ev.type)
 		{
 		case sf::Event::Closed:
-			this->window->close();
+			//this->window->close();
 			break;
 		case sf::Event::KeyPressed:
 			if (this->ev.key.code == sf::Keyboard::Escape)
@@ -222,4 +222,12 @@ void Game::Render()
 
 	/* Displays current window's content */
 	this->window->display();
+}
+
+void GfxSettings::loadGfxFromFile(std::string GfxFileName)
+{
+}
+
+void GfxSettings::saveGfxToFile(std::string GfxFileName)
+{
 }

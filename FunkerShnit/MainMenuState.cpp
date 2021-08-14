@@ -39,24 +39,54 @@ void MainMenuState::initButtons()
 	*/
 
 	/* Local vars for readability */
-	float pos_x(100.f), pos_y(100.f), button_width(150.f), button_height(60.f);
-	unsigned int button_text_character_size(30);
-	sf::Color idle_Text_Color(160, 160, 160, 240), hover_Text_Color(200, 200, 200, 240), active_Text_Color(200, 200, 200, 240),
-		idle_Color(0, 0, 0, 0), hover_Color(45, 45, 45, 0), active_color(250, 250, 250, 0);
+	float pos_x(100.f), pos_y(500.f), button_width(200.f), button_height(100.f);
+	unsigned int button_text_character_size(90);
+	sf::Color idle_Text_Color(180, 180, 180, 240), hover_Text_Color(205, 205, 205, 240), active_Text_Color(255, 255, 255, 240),
+		idle_Color(0, 0, 0, 0), hover_Color(255, 255, 255, 120), active_color(250, 250, 250, 0);
 		
 	/* Init the new game button and store into editorstate's button std::map */
 	this->buttons["NEW_GAME"] = new gui::Button(pos_x, pos_y, button_width, button_height,
-		"New Game", this->font->franchise, button_text_character_size,
+		"New Game", this->font->marketDeco, button_text_character_size,
 		idle_Text_Color, hover_Text_Color, active_Text_Color,
 		idle_Color, hover_Color, active_color);
 	
 	/* Init the Editor button and store into editorstate's button std::map */
 	this->buttons["EDITOR"] = new gui::Button(pos_x, pos_y + 100, button_width, button_height,
-		"Editor", this->font->franchise, button_text_character_size,
+		"Editor", this->font->marketDeco, button_text_character_size,
 		idle_Text_Color, hover_Text_Color, active_Text_Color,
 		idle_Color, hover_Color, active_color);
 	
 
+
+}
+
+void MainMenuState::initGui()
+{
+
+	this->background.setSize(sf::Vector2f(static_cast<float>(this->window->getSize().x),
+		static_cast<float>(this->window->getSize().y)));
+	if (!this->backgroundImage.loadFromFile("Resources/Images/Sprites/Background/MainMenu.png"))
+	{
+		throw "ERROR::InitGui()::MAINMENUSTATE could not open main menu background image ";
+	}
+
+	/* Init background rectangle */
+	this->background.setTexture(&this->backgroundImage);
+	
+	/* Title background strip */
+	this->backgroundStrip.setSize(sf::Vector2f(this->window->getSize().x + (this->window->getSize().x / 2), this->window->getSize().y / 9));
+	this->backgroundStrip.setFillColor(sf::Color(20, 20, 20, 100));
+	this->backgroundStrip.setOrigin(this->backgroundStrip.getGlobalBounds().width / 2.f, this->backgroundStrip.getGlobalBounds().height / 2.f);
+	this->backgroundStrip.setPosition(this->window->getSize().x / 2, this->window->getSize().y / 5.25f);
+	
+
+	/* Title */
+	this->title.setFont(this->font->dashHorizon);
+	this->title.setString("FUNKER SHNIT");
+	this->title.setCharacterSize(140.f);
+	this->title.setFillColor(sf::Color::White);
+	this->title.setOrigin(this->title.getGlobalBounds().width / 2.f, this->title.getGlobalBounds().height / 2.f);
+	this->title.setPosition(this->window->getSize().x / 2.f + 300, this->window->getSize().y / 5.f);
 
 }
 
@@ -66,8 +96,10 @@ MainMenuState::MainMenuState(sf::RenderWindow* window, std::map<std::string, int
 	:State(window, supportedKeys, states, grid_size_f)
 {
 	this->initKeybinds();
-
+	this->initGui();
 	this->initButtons();
+
+	
 }
 
 MainMenuState::~MainMenuState()
@@ -77,20 +109,21 @@ MainMenuState::~MainMenuState()
 void MainMenuState::Update(const float& dt)
 {
 	this->updateMousePos();
+	this->updateKeytime(dt);
 	this->updateInput();
 	this->updateButtons();
 }
 
 void MainMenuState::updateInput()
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("CLOSE"))))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("CLOSE"))) && this->getKeyTime())
 	{
 		this->endState();
 	}
 
 	if (this->buttons["NEW_GAME"]->isPressed())
 	{
-		this->states->push(new MainMenuState(this->window, this->supportedKeys, this->states, this->grifSizeF));
+		this->states->push(new GameState(this->window, this->supportedKeys, this->states, this->grifSizeF));
 	}
 	if (this->buttons["EDITOR"]->isPressed())
 	{
@@ -112,7 +145,14 @@ void MainMenuState::Render(sf::RenderTarget* target)
 {
 	if (!target) { target = this->window; }
 
+	target->draw(this->background);
+	target->draw(this->backgroundStrip);
+	target->draw(this->title);
+	
+
 	this->renderButtons(*target);
+
+	
 }
 
 void MainMenuState::renderButtons(sf::RenderTarget& target)

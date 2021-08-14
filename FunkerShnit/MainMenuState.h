@@ -1,7 +1,7 @@
 #ifndef MAINMENUSTATE_H
 #define MAINMENUSTATE_H
 
-#include "EditorState.h"
+#include "GameState.h"
 
 class MainMenuState : public State
 {
@@ -15,6 +15,14 @@ private:
 	/* Button */
 	std::map<std::string, gui::Button*> buttons;
 
+	/* Background */
+	sf::Texture backgroundImage;
+	sf::RectangleShape background;
+
+	sf::RectangleShape backgroundStrip;
+
+	sf::Text title;
+
 	/**** METHODS(Private) ****/
 
 	/*** Inits ***/
@@ -22,6 +30,7 @@ private:
 	void initKeybinds() override;
 	/** Non-Pure Virtuals **/
 	void initButtons();
+	void initGui();
 	
 
 protected:

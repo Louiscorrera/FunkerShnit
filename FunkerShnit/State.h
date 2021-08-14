@@ -44,7 +44,7 @@ private:
 
 	/** Game State **/
 	bool quit;
-
+	 
 
 	/**** METHODS(Private) ****/
 	/*** Inits ***/

@@ -2,6 +2,8 @@
 #define GUI_H
 
 #include "State.h"
+#include "TileMap.h"
+
 
 namespace gui {
 
@@ -120,6 +122,33 @@ namespace gui {
 		/*** Renders ***/
 		void Render(sf::RenderTarget& target);
 		void renderButtons();
+	};
+
+
+
+	class TextInputBox
+	{
+	private:
+		/**** DATA MEMBERS ****/
+		
+		/* Input Box */
+		
+
+
+		/**** METHODS(Private) ****/
+
+	protected:
+
+	public:
+		/**** CONSTRUCTOR | DESTRUCTOR ****/
+
+		/**** ACCESSORS ****/
+
+		/**** METHODS ****/
+
+		/*** Updates ***/
+
+		/*** Renders ***/
 	};
 
 

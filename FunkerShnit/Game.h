@@ -3,18 +3,42 @@
 
 #include "MainMenuState.h"
 
-struct Gfxettings 
+class GfxSettings
 {
-	/** Window Settings **/
-	sf::VideoMode videoMode;
-	std::string title;
-	bool fullscreen;
-	int frameRateLimit;
+public:
+	GfxSettings() { this->loadGfxFromFile("Settings File name"); }
+	~GfxSettings() { this->saveGfxToFile("Settings file name"); }
 
+	void loadGfxFromFile(std::string GfxFileName);
+	void saveGfxToFile(std::string GfxFileName);
+
+	/** Window Settings **/
+	sf::VideoMode screenModes;
+	std::string title;
+	sf::VideoMode videoMode;
+	bool fullscreen;
+	bool verticalSyncEnabled;
+	unsigned int frameRateLimit;
 	/** Game Dimensions **/
 	float gridSizeF;
-
 };
+
+class StateData
+{
+public:
+	StateData(){}
+	~StateData() { delete this->gfxSettings; }
+
+	/* Data Members */
+	sf::RenderWindow* window;
+	std::map<std::string, int>* supportedKeys;
+	std::stack<State*>* states;
+	float grid_size_f;
+
+	/* Graphics */
+	GfxSettings* gfxSettings;
+};
+
 class Game
 {
 
@@ -24,10 +48,12 @@ private:
 
 	/** State Stack **/
 	std::stack<State*> states;
+	StateData stateData;
 
 	/** Window **/
 	sf::RenderWindow* window;
-	Gfxettings gfxSettings;
+	GfxSettings gfxSettings;
+
 	/* Mouse */
 	sf::Vector2i mouseDesktopPos;
 
@@ -79,6 +105,9 @@ public:
 
 
 };
+
+
+;
 
 
 #endif
