@@ -135,7 +135,7 @@ void GameState::Update(const float& dt)
 	* Updates player animation based on player movement
 	* checks for player sound triggers/manages playing & stopping player sounds
 	* Updates hitbox position, relative to player sprite */
-	this->player->Update(dt);
+	this->player->Update(dt, static_cast<sf::Vector2i>(this->mousePosView));
 	this->updateView(dt);
 }
 
@@ -169,6 +169,7 @@ void GameState::updatePlayerInput(const float& dt)
 	{
 		this->endState(); 
 	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("EQUIP"))) && this->getKeyTime())
 	{
 		this->player->toggleSwordEquip();

@@ -86,7 +86,7 @@ void Player::toggleAttacking()
 
 
 
-void Player::Update(const float& dt, int sword_attack_style)
+void Player::Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style)
 {
 	this->movementComponent->Update(dt); //Applies physics to velocity (deceleration) and moves the sprite that represents the player
 	this->updateAnimation(dt); //check for movement and play animation sequence in accordance
@@ -96,7 +96,7 @@ void Player::Update(const float& dt, int sword_attack_style)
 	/* If sword is equipped update its position and attack style */
 	if (this->sword->getSwordEquipped())
 	{
-		this->updateSword(dt, sword_attack_style);
+		this->updateSword(dt, mouse_pos_window, sword_attack_style);
 	}
 }
 
@@ -139,9 +139,9 @@ void Player::updateSounds()
 	}
 }
 
-void Player::updateSword(const float& dt, int sword_attack_style)
+void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style)
 {
-	this->sword->Update(dt);
+	this->sword->Update(dt, mouse_pos_window);
 	this->sword->updateSwordRanges(this->getEntityGlobalBounds());
 	this->sword->updateSwordAttack(sword_attack_style);
 	this->sword->animateSword(this->getEntityGlobalBounds());

@@ -40,10 +40,10 @@ public:
 	
 
 	/*** Updates ***/
-	void Update(const float& dt, int sword_attack_style = 0);
+	void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style = 0) override;
 	void updateAnimation(const float& dt);
 	void updateSounds();
-	void updateSword(const float& dt, int sword_attack_style);
+	void updateSword(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style);
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget& target);

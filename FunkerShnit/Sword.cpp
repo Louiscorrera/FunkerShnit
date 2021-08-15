@@ -21,6 +21,9 @@ void Sword::initVars()
 
 	this->attackTimer = 0.f;
 	this->attackTimerReset = 50.f;
+
+	this->mousePosWindow.x = 0;
+	this->mousePosWindow.y = 0;
 }
 
 Sword::Sword(std::string item_name, unsigned int item_level, unsigned int item_value, unsigned int item_weight, 
@@ -74,12 +77,13 @@ void Sword::toggleAttacking()
 	this->isAttacking = !this->isAttacking;
 }
 
-void Sword::Update(const float& dt)
+void Sword::Update(const float& dt, const sf::Vector2i mouse_pos_window)
 {
 	if (this->isEquipped) /* Sword is equipped */
 	{
 		/* Do sword stuff */
 		this->updateAttackTimer(dt);
+		this->updateMousePos(mouse_pos_window);
 	}
 	else
 	{
@@ -87,6 +91,14 @@ void Sword::Update(const float& dt)
 	}
 
 }
+
+void Sword::updateMousePos(sf::Vector2i mouse_pos_window)
+{
+	this->mousePosWindow.x = mouse_pos_window.x;
+	this->mousePosWindow.y = mouse_pos_window.y;
+}
+
+
 
 
 void Sword::updateSwordAttack(int sword_attack)
@@ -180,9 +192,29 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 		else //If the sword is equipped but not attacking play idle state animation i.e floating
 		{
 			this->item.setPosition(this->entityBounds.left - 2, this->entityBounds.top - 2);
+			this->rotateSword();
 		}
 	}
 	else {} /* Sword is not equipped */
+}\
+
+
+void Sword::rotateSword()
+{
+	sf::Vector2f curPos = this->item.getPosition();
+
+	// now we have both the sprite position and the cursor
+	// position lets do the calculation so our sprite will
+	// face the position of the mouse
+	const float PI = 3.14159265;
+
+	float dx = curPos.x - this->mousePosWindow.x;
+	float dy = curPos.y - this->mousePosWindow.y;
+
+	float rotation = (atan2(dy, dx)) * 180 / PI;
+
+	this->item.setRotation(rotation + 315);
+
 }
 
 void Sword::resetSword()
@@ -200,5 +232,7 @@ void Sword::Render(sf::RenderTarget& target)
 
 	}
 }
+
+
 
 

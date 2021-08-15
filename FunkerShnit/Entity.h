@@ -54,7 +54,7 @@ public:
 
 	/*** Updates ***/
 	/** Pure Virtuals **/
-	virtual void Update(const float& dt, int sword_attack_style) = 0;
+	virtual void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style) = 0;
 	virtual void updateVelocity(const float& dir_x, const float& dir_y, const float& dt);
 
 	/*** Renders ***/
