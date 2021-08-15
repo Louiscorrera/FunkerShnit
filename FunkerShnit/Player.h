@@ -18,6 +18,9 @@ private:
 	sf::Texture swordTexture;
 	Sword* sword;
 
+	/* View */
+	sf::RenderWindow* currWindow;
+
 	/**** METHODS(Private) ****/
 	void initSounds();
 	void initSword();

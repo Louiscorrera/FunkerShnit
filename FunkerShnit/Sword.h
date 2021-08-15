@@ -59,14 +59,14 @@ public:
 	/**** METHODS ****/
 
 	/*** Updates ***/
-	void Update(const float& dt, const sf::Vector2i mouse_pos_window);
+	void Update(const float& dt, sf::Vector2i mouse_pos_window);
 	void updateMousePos(sf::Vector2i mouse_pos_window);
 	void updateSwordAttack(int sword_attack = SwordAttack::DEFAULT);
 	void updateAttackTimer(const float& dt);
 	void updateSwordRanges(sf::FloatRect playerBounds);
 
 	void animateSword(sf::FloatRect playerBounds);
-	void rotateSword();
+	void rotateSword(sf::FloatRect playerBounds);
 	void resetSword();
 
 	/*** Renders ***/
