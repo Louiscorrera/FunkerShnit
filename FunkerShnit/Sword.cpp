@@ -150,7 +150,7 @@ void Sword::updateSwordRanges(sf::FloatRect playerBounds)
 {
 	
 	this->entityBounds = playerBounds;
-	this->swordBounds = sf::FloatRect(this->entityBounds.left, this->entityBounds.top, this->entityBounds.width * 2, this->entityBounds.height * 2);
+	this->swordBounds = sf::FloatRect(this->entityBounds.left - 10, this->entityBounds.top - 10, this->entityBounds.width * 2, this->entityBounds.height * 2);
 }
 
 void Sword::animateSword(sf::FloatRect playerBounds)
@@ -170,7 +170,7 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 			switch (this->swordAttack)
 			{
 			case SwordAttack::DEFAULT:
-
+				this->rotateSword(playerBounds);
 
 				break;
 			case SwordAttack::STAB:
@@ -192,8 +192,9 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 		}
 		else //If the sword is equipped but not attacking play idle state animation i.e floating
 		{
-			//this->item.setPosition(this->entityBounds.left - 2, this->entityBounds.top - 2);
-			this->rotateSword(playerBounds);
+			/* This should be the sword floating around */
+			//this->rotateSword(playerBounds); //This needs to go into default attack branch above, keeping now until attack system is implemented
+			this->floatSword();
 		}
 	}
 	else {} /* Sword is not equipped */
@@ -255,8 +256,34 @@ void Sword::rotateSword(sf::FloatRect playerBounds)
 
 }
 
+void Sword::floatSword()
+{
+	/* Left and Right bounds check */
+	if (this->item.getGlobalBounds().left < this->swordBounds.left) /* Left */
+	{
+		this->swingVelocity.x = 0.5f;
+	}
+	else if (this->item.getGlobalBounds().left + this->item.getGlobalBounds().width > this->swordBounds.left + this->swordBounds.width) /* Right */
+	{
+		this->swingVelocity.x = -0.5f;
+	}
+
+	if (this->item.getGlobalBounds().top < this->swordBounds.top)
+	{
+		this->swingVelocity.y = 0.5f;
+	}
+	else if (this->item.getGlobalBounds().top + this->item.getGlobalBounds().height > this->swordBounds.top + this->swordBounds.height)
+	{
+		this->swingVelocity.y = -2.f;
+	}
+
+	/* Move */
+	this->item.setPosition(this->item.getPosition().x + this->swingVelocity.x, this->item.getPosition().y + this->swingVelocity.y);
+}
+
 void Sword::resetSword()
 {
+	
 }
 
 void Sword::Render(sf::RenderTarget& target)

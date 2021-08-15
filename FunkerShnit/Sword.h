@@ -67,6 +67,7 @@ public:
 
 	void animateSword(sf::FloatRect playerBounds);
 	void rotateSword(sf::FloatRect playerBounds);
+	void floatSword();
 	void resetSword();
 
 	/*** Renders ***/

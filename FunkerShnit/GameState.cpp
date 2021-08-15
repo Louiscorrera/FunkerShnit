@@ -174,6 +174,10 @@ void GameState::updatePlayerInput(const float& dt)
 	{
 		this->player->toggleSwordEquip();
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("ATTACK"))) && this->getKeyTime())
+	{
+		this->player->toggleAttacking();
+	}
 
 }
 

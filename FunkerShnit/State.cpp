@@ -71,8 +71,9 @@ void State::updateMousePos(sf::View* view)
 		static_cast<unsigned>(this->mousePosView.x) / static_cast<unsigned>(this->grifSizeF),
 		static_cast<unsigned>(this->mousePosView.y) / static_cast<unsigned>(this->grifSizeF)
 	);
+	//Debug
 	//system("cls");
-	std::cout << "X : " << this->mousePosWindow.x << " Y: " << this->mousePosWindow.y << "\n";
+	//std::cout << "X : " << this->mousePosWindow.x << " Y: " << this->mousePosWindow.y << "\n";
 }
 
 void State::updateKeytime(const float& dt)
