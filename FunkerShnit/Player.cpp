@@ -141,8 +141,8 @@ void Player::updateSounds()
 
 void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style)
 {
-	this->sword->Update(dt, mouse_pos_window);
 	this->sword->updateSwordRanges(this->getEntityGlobalBounds());
+	this->sword->Update(dt, mouse_pos_window);
 	this->sword->updateSwordAttack(sword_attack_style);
 	this->sword->animateSword(this->getEntityGlobalBounds());
 }

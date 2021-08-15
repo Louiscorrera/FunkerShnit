@@ -192,7 +192,7 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 		}
 		else //If the sword is equipped but not attacking play idle state animation i.e floating
 		{
-			this->item.setPosition(this->entityBounds.left - 2, this->entityBounds.top - 2);
+			//this->item.setPosition(this->entityBounds.left - 2, this->entityBounds.top - 2);
 			this->rotateSword(playerBounds);
 		}
 	}
@@ -202,9 +202,11 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 
 void Sword::rotateSword(sf::FloatRect playerBounds)
 {
-	sf::Vector2f curPos = this->item.getPosition();
-	sf::Vector2f playerPos = sf::Vector2f(playerBounds.width/2.f, playerBounds.height/2.f);
 	
+	sf::Vector2f curPos = this->item.getPosition();
+	sf::Vector2f playerPos = sf::Vector2f(playerBounds.left + (playerBounds.width /2.f), playerBounds.top + (playerBounds.height / 2.f));
+	
+	std::cout << "Player left: " << playerPos.x << " Player top: " << playerPos.y << "\n";
 	sf::Vertex vertices[2];
 	vertices[0].position = sf::Vector2f(playerPos.x, playerPos.y);
 	vertices[1].position = sf::Vector2f(this->mousePosWindow.x, this->mousePosWindow.y);
@@ -219,19 +221,20 @@ void Sword::rotateSword(sf::FloatRect playerBounds)
 	float dx = curPos.x - this->mousePosWindow.x;
 	float dy = curPos.y - this->mousePosWindow.y;
 
-	float ypos = playerPos.y - this->mousePosWindow.y;
-	float xpos = -(playerPos.x - this->mousePosWindow.x); 
+	float ypos = this->mousePosWindow.y - playerPos.y;
+	float xpos = this->mousePosWindow.x - playerPos.x;
 
-	float magnitude = std::sqrt(pow(xpos, 2) + pow(ypos, 2));
+	float magnitude = std::sqrt((xpos * xpos) + (ypos * ypos));
 
 	//std::cout << "YPos: " << ypos << " XPos: " << xpos << " Magnitude: " << magnitude << "\n" ;
-
-	if (magnitude > 0)
+	
+	
+	if (magnitude > 0 || magnitude < 0)
 	{
-		vertices[1].position = sf::Vector2f(this->mousePosWindow.x / magnitude, this->mousePosWindow.y / magnitude);
+		vertices[1].position = sf::Vector2f(xpos / magnitude, ypos / magnitude );
 	}
 
-	std::cout << vertices[1].position.x << " " << vertices[1].position.y << "\n";
+	//std::cout << vertices[1].position.x << " " << vertices[1].position.y << "\n";
 
 	float rotation = (atan2(dy, dx)) * 180 / PI;
 	//float angle = (atan2(this->mousePosWindow.y - playerPos.y, this->mousePosWindow.x - playerPos.x)) * 180 / PI;
@@ -241,8 +244,11 @@ void Sword::rotateSword(sf::FloatRect playerBounds)
 	float originX = playerBounds.width / 2.f;
 	float originY = playerBounds.height / 2.f;
 
+	float offsetX = 0;
+	float offsetY = 0;
+
 	//this->item.move(playerPos.x + radius*std::cos(angle), playerPos.y + radius*std::sin(angle)); 
-	this->item.move(originX + vertices[1].position.x * radius, originY + vertices[1].position.y * radius);
+	this->item.setPosition((vertices[1].position.x * radius) + playerPos.x, (vertices[1].position.y * radius) + playerPos.y);
 
 }
 
