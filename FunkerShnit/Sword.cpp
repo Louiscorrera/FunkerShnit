@@ -202,52 +202,55 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 
 void Sword::rotateSword(sf::FloatRect playerBounds)
 {
-	
+	/* Get sword's current position (origin at center) */
 	sf::Vector2f curPos = this->item.getPosition();
+	/* Get player's current position */
 	sf::Vector2f playerPos = sf::Vector2f(playerBounds.left + (playerBounds.width /2.f), playerBounds.top + (playerBounds.height / 2.f));
 	
-	std::cout << "Player left: " << playerPos.x << " Player top: " << playerPos.y << "\n";
+	//Debug
+	//std::cout << "Player left: " << playerPos.x << " Player top: " << playerPos.y << "\n";
+
+	/* Create a ray from center of player to mouse position (relative to view) */
 	sf::Vertex vertices[2];
 	vertices[0].position = sf::Vector2f(playerPos.x, playerPos.y);
 	vertices[1].position = sf::Vector2f(this->mousePosWindow.x, this->mousePosWindow.y);
 
-	float radius = 40;
-
-	// now we have both the sprite position and the cursor
-	// position lets do the calculation so our sprite will
-	// face the position of the mouse
+	/* MMMM pie! */
 	const float PI = 3.14159265;
 
-	float dx = curPos.x - this->mousePosWindow.x;
-	float dy = curPos.y - this->mousePosWindow.y;
+	
+	/* Calculate the X side length and Y side length of the right triangle formed from sword position to mouse position */
+	float dx = curPos.x - this->mousePosWindow.x; /* X side */
+	float dy = curPos.y - this->mousePosWindow.y; /* Y side */
 
-	float ypos = this->mousePosWindow.y - playerPos.y;
-	float xpos = this->mousePosWindow.x - playerPos.x;
-
+	/* Calculate the X side length and Y side length of right triangle formed from player position to mouse position */
+	float ypos = this->mousePosWindow.y - playerPos.y; /* X side */
+	float xpos = this->mousePosWindow.x - playerPos.x; /* Y side */
+	/* Get the magnitude of the vector formed from player position to mouse position */
 	float magnitude = std::sqrt((xpos * xpos) + (ypos * ypos));
 
+	//Debug
 	//std::cout << "YPos: " << ypos << " XPos: " << xpos << " Magnitude: " << magnitude << "\n" ;
 	
-	
+	/* Check to make sure magnitude is not 0 (Avoid division by zero) */
 	if (magnitude > 0 || magnitude < 0)
-	{
+	{ 
+		/* Normalize vector from player position to mouse position */
 		vertices[1].position = sf::Vector2f(xpos / magnitude, ypos / magnitude );
 	}
 
+	//Debug
 	//std::cout << vertices[1].position.x << " " << vertices[1].position.y << "\n";
 
+	/* Calculate the angle between sword and mouse position */
 	float rotation = (atan2(dy, dx)) * 180 / PI;
-	//float angle = (atan2(this->mousePosWindow.y - playerPos.y, this->mousePosWindow.x - playerPos.x)) * 180 / PI;
-
+	/* Rotate sword based on mouse position, have sword point to mouse */
 	this->item.setRotation(rotation + 315);
 
-	float originX = playerBounds.width / 2.f;
-	float originY = playerBounds.height / 2.f;
+	/* Set radius of sword rotation around player */
+	float radius = 40;
 
-	float offsetX = 0;
-	float offsetY = 0;
-
-	//this->item.move(playerPos.x + radius*std::cos(angle), playerPos.y + radius*std::sin(angle)); 
+	/* Set position of sword based on normalized vector from above * the radius of the cirlce and centers the revolution around player's current position */
 	this->item.setPosition((vertices[1].position.x * radius) + playerPos.x, (vertices[1].position.y * radius) + playerPos.y);
 
 }
