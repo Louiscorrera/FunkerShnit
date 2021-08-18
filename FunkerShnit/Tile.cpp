@@ -5,7 +5,7 @@
 
 /* Tile constructor without a texture (Default) */
 Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height)
-	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(false), type(1)
+	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(false), type(TileType::REGULAR), animationComponent(NULL)
 {
 	/* 
 	* Init tile
@@ -23,8 +23,9 @@ Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width,
 }
 
 /* Tile constructor with a texture */
-Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, const sf::Texture& tile_texture, const sf::IntRect& texture_selector, bool collision, unsigned int type)
-	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(collision), type(type)
+Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, const sf::Texture& tile_texture, 
+	const sf::IntRect& texture_selector, bool collision, unsigned int type)
+	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(collision), type(type), animationComponent(NULL)
 {
 	/*
 	* Init tile
@@ -41,7 +42,7 @@ Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width,
 	if (this->collison)
 	{
 		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX) * this->tileWidth, static_cast<float>(this->gridPosY) * this->tileHeight));
-		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight / 2));
 		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
 	}
 

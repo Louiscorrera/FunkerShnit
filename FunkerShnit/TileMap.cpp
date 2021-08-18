@@ -130,6 +130,11 @@ const int& TileMap::getTileType() const
 	return this->tileType;
 }
 
+const sf::Vector2f& TileMap::getTileMapMaxSize()
+{
+	return sf::Vector2f(this->maxSizeX * this->gridSizeF, this->maxSizeY * this->gridSizeF);
+}
+
 void TileMap::saveTileMap(std::string filename)
 {
 	std::ofstream ofs(filename);
@@ -296,6 +301,34 @@ void TileMap::clearCurrentMap()
 
 void TileMap::checkTileCollision(const float& dt, Entity* entity)
 {
+
+	/* Check for collision with map boundary */
+
+	/* Left Map boundary */
+	if (entity->getEntityGlobalBounds().left < 0)
+	{
+		entity->stopVelocityX();
+		entity->setPosition(0, entity->getPosition().y);
+	}
+	/* Right Map boundary */
+	else if (entity->getEntityGlobalBounds().left + entity->getEntityGlobalBounds().width > this->maxSizeX * this->gridSizeF)
+	{
+		entity->stopVelocityX();
+		entity->setPosition(this->maxSizeX * this->gridSizeF - entity->getEntityGlobalBounds().width, entity->getPosition().y);
+	}
+	/* Top Map Boundary */
+	else if (entity->getEntityGlobalBounds().top < 0)
+	{
+		entity->stopVelocityY();
+		entity->setPosition(entity->getPosition().x, 0);
+	}
+	/* Bottom Map Boundary */
+	else if (entity->getEntityGlobalBounds().top + entity->getEntityGlobalBounds().height > this->maxSizeY * this->gridSizeF)
+	{
+		entity->stopVelocityY();
+		entity->setPosition(entity->getPosition().x, this->maxSizeY * this->gridSizeF - entity->getEntityGlobalBounds().height);
+	}
+
 	/* Check if there is an entity(default = NULL), Render around that entity if it exists */
 	if (entity)
 	{
@@ -303,16 +336,21 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 		int startX(0), endX(0), startY(0), endY(0), layer(0);
 
 		/* Set and update the the offset from the entity to render around */
-		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 10;
+		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 5;
 		if (startX < 0) { startX = 0; }
-		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 10;
-		if (endX < 0) { endX = 0; }
-		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 10;
-		if (startY < 0) { startY = 0; }
-		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 10;
-		if (endY < 0) { endY = 0; }
+		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
 
-	
+		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 5;
+		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
+
+		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 5;
+		if (startY < 0) { startY = 0; }
+
+		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 5;
+		if (endY < 0) { endY = 0; }
+		if (endY > this->maxSizeY) { endY = this->maxSizeY - 1; }
+
+		
 
 		for (size_t x = startX; x < endX; x++)
 		{
@@ -349,10 +387,10 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 							else if (playerBounds.top < wallBounds.top
 								&& playerBounds.left < wallBounds.left + wallBounds.width
 								&& playerBounds.left + playerBounds.width > wallBounds.left
-								&& playerBounds.top + playerBounds.height < wallBounds.top)
+								&& playerBounds.top + playerBounds.height <= wallBounds.top)
 							{
 								entity->stopVelocityY(); //Make this function in entity
-								entity->setPosition(playerBounds.left, wallBounds.top - wallBounds.height + 3); //Make this function in entity
+								entity->setPosition(playerBounds.left, wallBounds.top - wallBounds.height * 2); //Make this function in entity
 							}
 							else {}
 
@@ -398,35 +436,44 @@ void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)
 		/* Local vars to store distance from entity to render */
 		int startX(0), endX(0), startY(0), endY(0), layer(0);
 
+
+
 		/* Set and update the the offset from the entity to render around */
-		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 15;
+		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 5;
 		if (startX < 0) { startX = 0; }
-		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 15;
-		if (endX < 0) { endX = 0; }
-		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 15;
+		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
+
+		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 5;
+		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
+
+		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 5;
 		if (startY < 0) { startY = 0; }
-		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 15;
-		if (endY < 0) { endY = 0; }
 
+		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 5;
+		//if (endY < 0) { endY = 0; }
+		if (endY > this->maxSizeY) { endY = this->maxSizeY; }
 
-		for (size_t x = startX; x < endX; x++)
-		{
-			for (size_t y = startY; y < endY; y++)
+		
+
+			for (size_t x = startX; x < endX; x++)
 			{
-				for (size_t k = 0; k < this->tileMap[x][y][layer].size(); k++)
+				for (size_t y = startY; y < endY; y++)
 				{
-					/* If this tile exists render it */
-					if (this->tileMap[x][y][layer][k]->type == TileType::DEFERRED)
+					for (size_t k = 0; k < this->tileMap[x][y][layer].size(); k++)
 					{
-						this->deferredRenderStack.push(this->tileMap[x][y][layer][k]);
-					}
-					else
-					{
-						this->tileMap[x][y][layer][k]->Render(target);
+						/* If this tile exists render it */
+						if (this->tileMap[x][y][layer][k]->type == TileType::DEFERRED)
+						{
+							this->deferredRenderStack.push(this->tileMap[x][y][layer][k]);
+						}
+						else
+						{
+							this->tileMap[x][y][layer][k]->Render(target);
+						}
 					}
 				}
 			}
-		}
+		
 	}
 	else /* If there is no entity render the whole map */
 	{

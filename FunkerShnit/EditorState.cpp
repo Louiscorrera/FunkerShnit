@@ -48,7 +48,7 @@ void EditorState::initText()
 
 void EditorState::initTileMap()
 {
-	this->tileMap = new TileMap(100.f, 100.f, 1.f, this->grifSizeF);
+	this->tileMap = new TileMap(50.f, 50.f, 1.f, this->grifSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))

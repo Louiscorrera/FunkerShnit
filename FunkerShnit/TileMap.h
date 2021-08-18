@@ -57,6 +57,7 @@ public:
 	const bool& getOverWrite() const;
 	const bool& getCollision() const;
 	const int& getTileType() const;
+	const sf::Vector2f& getTileMapMaxSize();
 	
 
 	/**** METHODS ****/

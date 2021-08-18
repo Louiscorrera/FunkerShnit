@@ -21,7 +21,7 @@ const sf::Vector2f& Entity::getPosition() const
 {
 	if (this->hitboxComponent)
 	{
-		//return this->hitboxComponent->getHitboxGlobalBounds();
+		return sf::Vector2f(this->hitboxComponent->getHitboxGlobalBounds().left, this->hitboxComponent->getHitboxGlobalBounds().top);
 	}
 	return this->entity.getPosition();
 }

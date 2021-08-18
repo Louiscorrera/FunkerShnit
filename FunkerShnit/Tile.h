@@ -1,7 +1,9 @@
 #ifndef TILE_H
 #define TILE_H
 
-enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE};
+#include "AnimationComponent.h"
+
+enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE, ANIMATED};
 
 class Tile
 {
@@ -17,8 +19,7 @@ private:
 	float tileWidth;
 	float tileHeight;
 
-	
-	
+	AnimationComponent* animationComponent;
 
 	/* Graphics */
 	

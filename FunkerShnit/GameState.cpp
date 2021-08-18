@@ -51,7 +51,7 @@ void GameState::initPauseMenu()
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(100.f, 100.f, 1.f, this->grifSizeF);
+	this->tileMap = new TileMap(50.f, 50.f, 10.f, this->grifSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
@@ -189,6 +189,35 @@ void GameState::updateTileMap(const float& dt)
 void GameState::updateView(const float& dt)
 {
 	this->mainView.setCenter(this->player->getPosition());
+
+	if (this->tileMap->getTileMapMaxSize().x >= this->mainView.getSize().x)
+	{
+		if (this->mainView.getCenter().x - this->mainView.getSize().x / 2.f < 0.f)
+		{
+			this->mainView.setCenter(0.f + this->mainView.getSize().x / 2.f, this->mainView.getCenter().y);
+		}
+		else if (this->mainView.getCenter().x + this->mainView.getSize().x / 2.f > this->tileMap->getTileMapMaxSize().x)
+		{
+			this->mainView.setCenter(this->tileMap->getTileMapMaxSize().x - this->mainView.getSize().x / 2.f, this->mainView.getCenter().y);
+		}
+	}
+
+	if (this->tileMap->getTileMapMaxSize().y >= this->mainView.getSize().y)
+	{
+		if (this->mainView.getCenter().y - this->mainView.getSize().y / 2.f < 0.f)
+		{
+			this->mainView.setCenter(this->mainView.getCenter().x, 0.f + this->mainView.getSize().y / 2.f);
+		}
+		else if (this->mainView.getCenter().y + this->mainView.getSize().y / 2.f > this->tileMap->getTileMapMaxSize().y)
+		{
+			this->mainView.setCenter(this->mainView.getCenter().x, this->tileMap->getTileMapMaxSize().y - this->mainView.getSize().y / 2.f);
+		}
+	}
+	
+	//this->viewGridPosition.x = static_cast<int>(this->view.getCenter().x) / static_cast<int>(this->grifSizeF);
+	//this->viewGridPosition.y = static_cast<int>(this->view.getCenter().y) / static_cast<int>(this->grifSizeF);
+	
+
 }
 
 void GameState::Render(sf::RenderTarget* target)
