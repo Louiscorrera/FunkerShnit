@@ -56,8 +56,8 @@ const std::string Tile::getTileAsString() const
 {
 	std::stringstream ss;
 
-	ss << this->gridPosX << " " << this->gridPosY << " " << this->tileWidth << " " << this->tileHeight << " " << this->tileShape.getTextureRect().left << " " 
-		<< this->tileShape.getTextureRect().top << " " << this->collison;
+	ss << this->gridPosX << " " << this->gridPosY << " " << this->tileWidth << " " << this->tileHeight << " " << this->tileShape.getTextureRect().left << " "
+		<< this->tileShape.getTextureRect().top << " " << this->collison << " " << this->type;
 	std::string something = ss.str();
 
 	return something;
@@ -85,5 +85,5 @@ void Tile::Update(sf::Texture& tile_texture)
 void Tile::Render(sf::RenderTarget& target)
 {
 	target.draw(this->tileShape);
-	target.draw(this->collisionBox);
+	//target.draw(this->collisionBox);
 }

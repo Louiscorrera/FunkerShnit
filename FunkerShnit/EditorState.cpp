@@ -51,7 +51,7 @@ void EditorState::initTileMap()
 	this->tileMap = new TileMap(100.f, 100.f, 1.f, this->grifSizeF);
 
 	/* Init tile map texture sheet */
-	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/grassandtilesheet.png"))
+	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
 	{
 		throw "ERROR::InitTileMap() Could not load tile map texture sheet";
 	}
@@ -185,7 +185,7 @@ void EditorState::updateEditorInput()
 				if (this->tileMap->getCollision())
 				{
 					/* Display tile added confirmation message if tile was added */
-					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true))
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true, this->tileMap->getTileType()))
 					{
 						this->click.play();
 						this->text.setString("Tile Added!");
@@ -198,7 +198,7 @@ void EditorState::updateEditorInput()
 				else /* Check if collision is disabled, add a regular tile (non-collision) if so */
 				{
 					/* Display tile added confirmation message if tile was added */
-					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector))
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, false, this->tileMap->getTileType()))
 					{
 						this->click.play();
 						this->text.setString("Tile Added!");
@@ -247,6 +247,10 @@ void EditorState::updateEditorInput()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_COLLISION"))) && this->getKeyTime())
 	{
 		this->tileMap->toggleCollision();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_TYPE"))) && this->getKeyTime())
+	{
+		this->tileMap->toggleType();
 	}
 
 
@@ -303,10 +307,17 @@ void EditorState::updateGui(const float& dt)
 void EditorState::updateMouseTileInfo()
 {
 	std::stringstream ss;
+	std::string type;
+
+	if (this->tileMap->getTileType() == 0) { type = "REGULAR"; }
+	if (this->tileMap->getTileType() == 1) { type = "COLLISION"; }
+	if (this->tileMap->getTileType() == 2) { type = "DEFERRED"; }
+	if (this->tileMap->getTileType() == 3) { type = "DAMAGE"; }
 
 	ss << "(" << this->mousePosGrid.x << ", " << this->mousePosGrid.y << ")" << 
 		"\n" << "Overwrite: " << ((this->tileMap->getOverWrite()) ? "Enabled" : "Disabled") << 
-		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled");
+		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled") <<
+		"\n" << "Type: " << type;
 
 	this->mouseTileInfo.setString(ss.str());
 	this->mouseTileInfo.setPosition(this->mousePosWindow.x + 60.f, this->mousePosWindow.y);

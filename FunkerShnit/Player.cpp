@@ -149,13 +149,31 @@ void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int swo
 
 void Player::Render(sf::RenderTarget& target)
 {
-	/* If a sword is equipped draw it*/
-	if (this->sword->getSwordEquipped())
-	{
-		this->sword->Render(target);
-	}
+	int renderOrder = rand() % 2;
 
-	this->hitboxComponent->render(target);
-	target.draw(this->entity);
+	if (renderOrder == 0)
+	{
+		if (this->sword->getSwordEquipped())
+		{
+			this->sword->Render(target);
+		}
+		this->hitboxComponent->render(target);
+		target.draw(this->entity);
+	}
+	else 
+	{
+		this->hitboxComponent->render(target);
+		target.draw(this->entity);
+
+		if (this->sword->getSwordEquipped())
+		{
+			this->sword->Render(target);
+		}
+
+	}
+	
+
+	/* If a sword is equipped draw it*/
+	
 }
 

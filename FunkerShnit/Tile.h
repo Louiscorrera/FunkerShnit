@@ -1,7 +1,7 @@
 #ifndef TILE_H
 #define TILE_H
 
-
+enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE};
 
 class Tile
 {
@@ -17,9 +17,8 @@ private:
 	float tileWidth;
 	float tileHeight;
 
-	/* Tile Attribs */
-	bool collison;
-	unsigned type;
+	
+	
 
 	/* Graphics */
 	
@@ -28,11 +27,16 @@ private:
 
 protected:
 
-public:
-	/**** CONSTRUCTOR | DESTRUCTOR ****/
 
+public:
+
+	/* Tile Attribs */
+	bool collison;
+	unsigned type;
+
+	/**** CONSTRUCTOR | DESTRUCTOR ****/
 	Tile(unsigned int grid_pos_x, unsigned int grid_pos_y, float tile_width, float tile_height); /* Tile constructor without a texture (Default) */
-	Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, const sf::Texture& tile_texture, const sf::IntRect& texture_selector, bool collision = false, unsigned int type = 1); /* Tile constructor with a texture */
+	Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, const sf::Texture& tile_texture, const sf::IntRect& texture_selector, bool collision = false, unsigned int type = 0); /* Tile constructor with a texture */
 	~Tile();
 
 	/**** ACCESSORS ****/

@@ -54,7 +54,7 @@ void GameState::initTileMap()
 	this->tileMap = new TileMap(100.f, 100.f, 1.f, this->grifSizeF);
 
 	/* Init tile map texture sheet */
-	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/grassandtilesheet.png"))
+	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
 	{
 		throw "ERROR::InitTileMap() Could not load tile map texture sheet";
 	}
@@ -198,6 +198,7 @@ void GameState::Render(sf::RenderTarget* target)
 	target->setView(this->mainView);
 	this->renderTileMap(*target);
 	this->renderPlayer(*target);
+	this->tileMap->deferredRender(*target);
 	
 }
 

@@ -68,6 +68,7 @@ TileMap::TileMap(float max_size_x, float max_size_y, float max_layers, float gri
 	this->initTileMap();
 	this->overWriteEnabled = false;
 	this->maxTiles = 10;
+	this->tileType = TileType::REGULAR;
 }
 
 TileMap::~TileMap()
@@ -101,6 +102,19 @@ void TileMap::toggleCollision()
 	this->collisionEnabled = !this->collisionEnabled;
 }
 
+void TileMap::toggleType()
+{
+	
+	if (this->tileType == TileType::DAMAGE)
+	{
+		this->tileType = TileType::REGULAR;
+	}
+	else
+	{
+		tileType++;
+	}
+}
+
 const bool& TileMap::getOverWrite() const
 {
 	return this->overWriteEnabled;
@@ -109,6 +123,11 @@ const bool& TileMap::getOverWrite() const
 const bool& TileMap::getCollision() const
 {
 	return this->collisionEnabled;
+}
+
+const int& TileMap::getTileType() const
+{
+	return this->tileType;
 }
 
 void TileMap::saveTileMap(std::string filename)
@@ -134,7 +153,7 @@ void TileMap::saveTileMap(std::string filename)
 	*/
 
 	/* TileMap Specs */
-	ofs << this->maxSizeX << " " << this->maxSizeY << " " << this->maxLayers << " " << this->gridSizeF << " " << "Resources/Images/Tiles/grassandtilesheet.png" << " ";
+	ofs << this->maxSizeX << " " << this->maxSizeY << " " << this->maxLayers << " " << this->gridSizeF << " " << "Resources/Images/Tiles/tilesheet1.2.png" << " ";
 
 	/* Tile Specs */
 	for (size_t x = 0; x < this->maxSizeX; x++)
@@ -195,7 +214,8 @@ void TileMap::loadTileMap(std::string filename)
 	float tile_width(0), tile_height(0);
 	int texture_rect_left(0), texture_rect_top(0);
 	sf::IntRect rect;
-	bool collision = false;
+	bool collision(false);
+	int tile_type(0);
 
 	/* Init tile map before initTileMap(string) to ensure the correct texture sheet is loaded, as well as all the other tile map dimensions */
 	ifs >> this->maxSizeX >> this->maxSizeY >> this->maxLayers >> this->gridSizeF >> texture_sheet_file;
@@ -207,11 +227,11 @@ void TileMap::loadTileMap(std::string filename)
 	rect.width = this->gridSizeF;
 	rect.height = this->gridSizeF;
 
-	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision)
+	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision >> tile_type)
 	{
 		rect.left = texture_rect_left;
 		rect.top = texture_rect_top;
-		this->tileMap[grid_cord_x][grid_cord_y][layer].push_back (new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision));
+		this->tileMap[grid_cord_x][grid_cord_y][layer].push_back (new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type));
 	}
 	
 	
@@ -225,23 +245,24 @@ void TileMap::Update()
 
 }
 
-bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, bool collision)
+bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, 
+	sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, 
+	bool collision, int tile_type)
 {
-
+	/* Check if grid position is in the tile map & a valid position */
 	if (pos_x < this->maxSizeX && pos_x >= 0
 		&& pos_y < this->maxSizeY && pos_y >= 0
 		&& layer < this->maxLayers && layer >= 0)
 	{
-		/* Tile layer is empty and texture can be added to this tile */
-		
-			if (this->collisionEnabled)
-			{
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision));
-			}
-			else
-			{
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector));
-			}
+			
+			//if (this->collisionEnabled)
+			//{
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
+			//}
+			//else
+			//{
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
+			//}
 			return true;
 		
 	}
@@ -395,7 +416,11 @@ void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)
 				for (size_t k = 0; k < this->tileMap[x][y][layer].size(); k++)
 				{
 					/* If this tile exists render it */
-					if (this->tileMap[x][y][layer][k])
+					if (this->tileMap[x][y][layer][k]->type == TileType::DEFERRED)
+					{
+						this->deferredRenderStack.push(this->tileMap[x][y][layer][k]);
+					}
+					else
 					{
 						this->tileMap[x][y][layer][k]->Render(target);
 					}
@@ -420,5 +445,15 @@ void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)
 			}
 		}
 	}
+}
+
+void TileMap::deferredRender(sf::RenderTarget& target)
+{
+	while (!this->deferredRenderStack.empty())
+	{
+		this->deferredRenderStack.top()->Render(target);
+		this->deferredRenderStack.pop();
+	}
+	
 }
 

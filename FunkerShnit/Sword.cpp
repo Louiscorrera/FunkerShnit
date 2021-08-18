@@ -150,7 +150,7 @@ void Sword::updateSwordRanges(sf::FloatRect playerBounds)
 {
 	
 	this->entityBounds = playerBounds;
-	this->swordBounds = sf::FloatRect(this->entityBounds.left - 10, this->entityBounds.top - 10, this->entityBounds.width * 2, this->entityBounds.height * 2);
+	this->swordBounds = sf::FloatRect(this->entityBounds.left - 50, this->entityBounds.top - 50, this->entityBounds.width * 4, this->entityBounds.height * 3);
 }
 
 void Sword::animateSword(sf::FloatRect playerBounds)
@@ -261,20 +261,20 @@ void Sword::floatSword()
 	/* Left and Right bounds check */
 	if (this->item.getGlobalBounds().left < this->swordBounds.left) /* Left */
 	{
-		this->swingVelocity.x = 0.5f;
+		this->swingVelocity.x = 1.f;
 	}
 	else if (this->item.getGlobalBounds().left + this->item.getGlobalBounds().width > this->swordBounds.left + this->swordBounds.width) /* Right */
 	{
-		this->swingVelocity.x = -0.5f;
+		this->swingVelocity.x = -1.f;
 	}
 
 	if (this->item.getGlobalBounds().top < this->swordBounds.top)
 	{
-		this->swingVelocity.y = 0.5f;
+		this->swingVelocity.y = 1.f;
 	}
 	else if (this->item.getGlobalBounds().top + this->item.getGlobalBounds().height > this->swordBounds.top + this->swordBounds.height)
 	{
-		this->swingVelocity.y = -2.f;
+		this->swingVelocity.y = -1.f;
 	}
 
 	/* Move */

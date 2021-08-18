@@ -17,6 +17,9 @@ private:
 	sf::Texture tileTextureSheet;
 	sf::IntRect* textureSelector;
 
+	/* Deferred Render */
+	std::stack<Tile*> deferredRenderStack;
+
 	/* Dimensions */
 	float maxSizeX;
 	float maxSizeY;
@@ -27,6 +30,7 @@ private:
 	/* Map Updates */
 	bool overWriteEnabled;
 	bool collisionEnabled;
+	int tileType;
 
 	/* Key Timer */
 	float keyTimer;
@@ -49,8 +53,10 @@ public:
 	/**** ACCESSORS ****/
 	void toggleOverwrite();
 	void toggleCollision();
+	void toggleType();
 	const bool& getOverWrite() const;
 	const bool& getCollision() const;
+	const int& getTileType() const;
 	
 
 	/**** METHODS ****/
@@ -61,13 +67,16 @@ public:
 	/*** Updates ***/
 	void Update();
 
-	bool addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, bool collision = false);
+	bool addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, 
+		sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, 
+		bool collision = false, int tile_type = 0);
 	bool removeTile(const float& pos_x, const float& pos_y, const float& layer);
 	void clearCurrentMap();
 	void checkTileCollision(const float& dt, Entity* entity = NULL);
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL);
+	void deferredRender(sf::RenderTarget& target);
 };
 
 
