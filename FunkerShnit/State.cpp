@@ -1,43 +1,87 @@
 #include "stdafx.h"
 #include "State.h"
 
-/* Colors(Declarations at bottom of State) */
-void State::initColors()
+
+
+void GfxSettings::loadGfxFromFile(std::string GfxFileName)
 {
-	this->color = new Colors();
+	/* Open in file stream to read from window config file */
+	std::ifstream ifs("Config/window_config.txt");
+	if (ifs.is_open() == false)
+	{
+		std::cout << "ERROR::InitWindow()::Game Window config file could not be opened to initialize window\n";
+	}
+
+	/* Defaults */
+	this->resolution = sf::VideoMode::getDesktopMode();
+	this->title = "Default";
+	this->fullscreen = false;
+	this->verticalSyncEnabled = false;
+	this->frameRateLimit = 120;
+
+	/* GridSize */
+	this->gridSizeF = 50.f;
+
+	/* Take in data from window config file */
+	ifs >> this->resolution.width >> this->resolution.height;
+	ifs >> this->title;
+	ifs >> this->fullscreen;
+	ifs >> this->frameRateLimit;
+	ifs >> this->gridSizeF;
+
+	ifs.close();
 }
 
-/* Fonts(Declarations at bottom of State) */
-void State::initFonts()
+void GfxSettings::saveGfxToFile(std::string GfxFileName)
 {
-	this->font = new Fonts();
+	/* Open out file stream to read from window config file */
+	std::ofstream ofs("Config/window_config.txt");
+	if (ofs.is_open() == false)
+	{
+		std::cout << "ERROR::InitWindow()::Game Window config file could not be opened to initialize window\n";
+	}
+
+	/* Send \out data from window config file */
+	ofs << this->resolution.width << " " << this->resolution.height << " ";
+	ofs << this->title << " ";
+	ofs << this->fullscreen << " ";
+	ofs << this->frameRateLimit << " ";
+	ofs << this->gridSizeF;
+
+	ofs.close();
 }
 
-State::State(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f)
+
+StateData::StateData()
 {
+	this->gfxSettings = new GfxSettings();
+	this->gfxSettings->loadGfxFromFile("GFX file settings path");
+	this->initGridSize();
+	this->initFontsColors();
+}
+
+
+
+
+
+State::State(StateData* state_data)
+{
+	this->stateData = state_data;
+
+
 	this->quit = false;
-	this->window = window;
-	this->supportedKeys = supportedKeys;
-	this->states = states;
-	this->grifSizeF = grid_size_f;
 
 	/* Keys & Time inits */
 	this->keyTime = 0.f;
 	this->keyTimeMax = 15.f;
 
-	/* Color init */
-	this->initColors();
-	
-	/* Font init */
-	this->initFonts();
-
 }
 
 State::~State()
 {
-	delete this->color;
-	delete this->font;
 }
+
+
 
 const bool& State::getQuit() const
 {
@@ -56,25 +100,25 @@ const bool& State::getKeyTime()
 
 void State::updateMousePos(sf::View* view)
 {
-	this->mousePosWindow = sf::Mouse::getPosition(*this->window);
+	this->mousePosWindow = sf::Mouse::getPosition(*this->stateData->window);
 
 	if (view)
 	{
-		this->window->setView(*view);
+		this->stateData->window->setView(*view);
 	}
 	else
 	{
-		this->window->setView(this->window->getDefaultView());
+		this->stateData->window->setView(this->stateData->window->getDefaultView());
 	}
-	this->mousePosView = this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window));
+	this->mousePosView = this->stateData->window->mapPixelToCoords(sf::Mouse::getPosition(*this->stateData->window));
 	this->mousePosGrid = sf::Vector2u(
-		static_cast<unsigned>(this->mousePosView.x) / static_cast<unsigned>(this->grifSizeF),
-		static_cast<unsigned>(this->mousePosView.y) / static_cast<unsigned>(this->grifSizeF)
+		static_cast<unsigned>(this->mousePosView.x) / static_cast<unsigned>(this->stateData->gfxSettings->gridSizeF),
+		static_cast<unsigned>(this->mousePosView.y) / static_cast<unsigned>(this->stateData->gfxSettings->gridSizeF)
 	);
 	//Debug
 	//system("cls");
 	//std::cout << "X : " << this->mousePosWindow.x << " Y: " << this->mousePosWindow.y << "\n";
-}
+} 
 
 void State::updateKeytime(const float& dt)
 {
@@ -91,55 +135,4 @@ void State::endState()
 
 
 
-/* Colors */
-/* WARNING: Can be accessed anywhere in a state and manipulated */
-Colors::Colors()
-{
-	this->initColors();
-}
 
-
-void Colors::initColors()
-{
-	this->pukeGreen = sf::Color(204, 204, 0, 255);
-	this->darkRed = sf::Color(153, 0, 0, 255);
-	this->lightPurple1 = sf::Color(178, 102, 205, 255);
-	this->darkPurple1 = sf::Color(102, 0, 204, 255);
-	this->darkPurple2 = sf::Color(51, 0, 102, 255);
-	this->lightGreen = sf::Color(51, 255, 51, 255);
-	this->teal = sf::Color(0, 204, 204, 255);
-	this->lightGrey = sf::Color(192, 192, 192, 255);
-	this->lighterGrey = sf::Color(224, 224, 224, 255);
-}
-
-
-
-/* Fonts */
-Fonts::Fonts()
-{
-	this->initFonts();
-}
-
-void Fonts::initFonts()
-{
-	if (!this->corleone.loadFromFile("Resources/Fonts/Corleone.ttf"))
-	{
-		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
-	}
-	if (!this->dashHorizon.loadFromFile("Resources/Fonts/Dash-Horizon-Demo.otf"))
-	{
-		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
-	}
-	if (!this->franchise.loadFromFile("Resources/Fonts/Franchise.ttf"))
-	{
-		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
-	}
-	if (!this->marketDeco.loadFromFile("Resources/Fonts/Market_Deco.ttf"))
-	{
-		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
-	}
-	if (!this->amazDoomRight.loadFromFile("Resources/Fonts/AmazDoomRight.ttf"))
-	{
-		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
-	}
-}

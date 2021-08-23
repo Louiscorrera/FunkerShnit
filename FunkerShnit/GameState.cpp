@@ -20,7 +20,7 @@ void GameState::initKeybinds()
 	std::string key_bind(""), key("");
 	while (ifs >> key_bind >> key)
 	{
-		this->keyBinds[key_bind] = this->supportedKeys->at(key);
+		this->keyBinds[key_bind] = this->stateData->supportedKeys->at(key);
 	}
 
 	ifs.close();
@@ -46,12 +46,12 @@ void GameState::initPlayer()
 
 void GameState::initPauseMenu()
 {
-	this->pauseMenu = new PauseState(this->window, this->supportedKeys, this->states, this->grifSizeF, *this->font, *this->color);
+	//this->pauseMenu = new PauseState(this->stateData);
 }
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(50.f, 50.f, 10.f, this->grifSizeF);
+	this->tileMap = new TileMap(50.f, 50.f, 10.f, this->stateData->gfxSettings->gridSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
@@ -64,9 +64,9 @@ void GameState::initTileMap()
 
 void GameState::initView()
 {
-	this->mainView.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->mainView.setSize(sf::Vector2f(this->stateData->window->getSize().x, this->stateData->window->getSize().y));
 
-	this->mainView.setCenter(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
+	this->mainView.setCenter(this->stateData->window->getSize().x / 2.f, this->stateData->window->getSize().y / 2.f);
 }
 
 void GameState::initGui()
@@ -97,8 +97,8 @@ void GameState::initSounds()
 }
 
 
-GameState::GameState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f)
-	:State(window, supportedKeys, states, grid_size_f)
+GameState::GameState(StateData* state_data)
+	:State(state_data)
 {
 	this->initKeybinds();
 	this->initTileMap();
@@ -111,13 +111,15 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string, int>* suppo
 	this->keyTimeMax = 50.f;
 	this->keyTime = 0.f;
 
+	this->swordAction = SwordAttack::DEFAULT;
+
 }
 
 GameState::~GameState()
 {
 	delete this->tileMap;
 	delete this->player;
-	delete this->pauseMenu;
+	
 }
 
 void GameState::Update(const float& dt)
@@ -128,56 +130,27 @@ void GameState::Update(const float& dt)
 	/* Updates velocity based off user's input (WASD) */
 	this->updatePlayerInput(dt); 
 
-	
-	
 	this->tileMap->checkTileCollision(dt, this->player);
 	/* Applies physics to Velocity
 	* Updates player animation based on player movement
 	* checks for player sound triggers/manages playing & stopping player sounds
 	* Updates hitbox position, relative to player sprite */
-	this->player->Update(dt, static_cast<sf::Vector2i>(this->mousePosView));
+	this->player->Update(dt, static_cast<sf::Vector2i>(this->mousePosView), this->swordAction);
+
 	this->updateView(dt);
 }
 
 void GameState::updatePlayerInput(const float& dt)
 {
-	/* Updates velocity based of user's input (WASD) */
-	float movementSpeed = 1;//Local velocity manipulation factor for ease of changing for me :)
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_UP"))))
-	{
-		this->player->updateVelocity(0.f, -movementSpeed, dt);
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_DOWN"))))
-	{
-		this->player->updateVelocity(0.f, movementSpeed, dt);
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_LEFT"))))
-	{
-		this->player->updateVelocity(-movementSpeed, 0.f, dt);
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_RIGHT"))))
-	{
-		this->player->updateVelocity(movementSpeed, 0.f, dt);
-	}
-
 	/* check if the quit button has been pressed, end game state if so */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("CLOSE"))))
 	{
 		this->endState(); 
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("EQUIP"))) && this->getKeyTime())
-	{
-		this->player->toggleSwordEquip();
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("ATTACK"))) && this->getKeyTime())
-	{
-		this->player->toggleAttacking();
-	}
+	this->updatePlayerMovement(dt); //Update movement
+	this->updatePlayerWeapon(); //Update weapon
+	
 
 }
 
@@ -220,9 +193,52 @@ void GameState::updateView(const float& dt)
 
 }
 
+void GameState::updatePlayerMovement(const float& dt)
+{
+	/* Updates velocity based of user's input (WASD) */
+	float movementSpeed = 1;//Local velocity manipulation factor for ease of changing for me :)
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_UP"))))
+	{
+		this->player->updateVelocity(0.f, -movementSpeed, dt);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_DOWN"))))
+	{
+		this->player->updateVelocity(0.f, movementSpeed, dt);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_LEFT"))))
+	{
+		this->player->updateVelocity(-movementSpeed, 0.f, dt);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("MOVE_RIGHT"))))
+	{
+		this->player->updateVelocity(movementSpeed, 0.f, dt);
+	}
+}
+
+void GameState::updatePlayerWeapon()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("EQUIP"))) && this->getKeyTime())
+	{
+		this->player->toggleSwordEquip();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("ATTACK"))) && this->getKeyTime())
+	{
+		this->player->toggleAttacking();
+	}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->getKeyTime())
+	{
+		this->player->attackStab();
+	}
+	
+}
+
 void GameState::Render(sf::RenderTarget* target)
 {
-	if (!target) { target = this->window; }
+	if (!target) { target = this->stateData->window; }
 
 	target->setView(this->mainView);
 	this->renderTileMap(*target);

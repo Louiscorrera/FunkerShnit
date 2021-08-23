@@ -4,6 +4,7 @@
 #include "MovementComponent.h"
 #include "AnimationComponent.h"
 #include "HitboxComponent.h"
+#include "Sword.h"
 
 class Entity
 {
@@ -18,6 +19,9 @@ protected:
 	/**** DATA MEMBERS ****/
 	/* Graphic */
 	sf::Sprite entity;
+
+	/* Trackers */
+	bool isAlive;
 
 	/* Movement */
 	MovementComponent* movementComponent;
@@ -54,7 +58,8 @@ public:
 
 	/*** Updates ***/
 	/** Pure Virtuals **/
-	virtual void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style) = 0;
+	virtual void Update(const float& dt); //Does nothing
+	virtual void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style); //Does nothing
 	virtual void updateVelocity(const float& dir_x, const float& dir_y, const float& dt);
 
 	/*** Renders ***/

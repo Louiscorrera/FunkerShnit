@@ -11,6 +11,73 @@
 				/***********************/
 						  /****/
 
+
+
+
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+
+
+		/*******************************/
+		/******** Colors & Fonts *******/
+		/*******************************/
+
+
+
+/* Colors */
+/* WARNING: Can be accessed anywhere in a state and manipulated */
+gui::Colors::Colors()
+{
+	this->initColors();
+}
+
+
+void gui::Colors::initColors()
+{
+	this->pukeGreen = sf::Color(204, 204, 0, 255);
+	this->darkRed = sf::Color(153, 0, 0, 255);
+	this->lightPurple1 = sf::Color(178, 102, 205, 255);
+	this->darkPurple1 = sf::Color(102, 0, 204, 255);
+	this->darkPurple2 = sf::Color(51, 0, 102, 255);
+	this->lightGreen = sf::Color(51, 255, 51, 255);
+	this->teal = sf::Color(0, 204, 204, 255);
+	this->lightGrey = sf::Color(192, 192, 192, 255);
+	this->lighterGrey = sf::Color(224, 224, 224, 255);
+}
+
+
+
+/* Fonts */
+gui::Fonts::Fonts()
+{
+	this->initFonts();
+}
+
+void gui::Fonts::initFonts()
+{
+	if (!this->corleone.loadFromFile("Resources/Fonts/Corleone.ttf"))
+	{
+		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
+	}
+	if (!this->dashHorizon.loadFromFile("Resources/Fonts/Dash-Horizon-Demo.otf"))
+	{
+		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
+	}
+	if (!this->franchise.loadFromFile("Resources/Fonts/Franchise.ttf"))
+	{
+		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
+	}
+	if (!this->marketDeco.loadFromFile("Resources/Fonts/Market_Deco.ttf"))
+	{
+		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
+	}
+	if (!this->amazDoomRight.loadFromFile("Resources/Fonts/AmazDoomRight.ttf"))
+	{
+		throw "ERROR::InitFonts()::FONTS::STATE could not load one or more fonts from file";
+	}
+}
+
 /*=========================================================================================================================================================================*/
 /*=========================================================================================================================================================================*/
 /*=========================================================================================================================================================================*/
@@ -128,6 +195,7 @@ void gui::Button::Render(sf::RenderTarget& target)
 		/*******************************/
 		/****** TEXTURE SELECTOR *******/
 		/*******************************/
+
 void gui::EditorTextureSelector::initButtons()
 {
 	
@@ -140,8 +208,8 @@ void gui::EditorTextureSelector::initButtons()
 }
 
 
-gui::EditorTextureSelector::EditorTextureSelector(float pos_x, float pos_y, float width, float height, float grid_size_f, sf::Texture* tile_sheet_texture, Fonts& fonts, Colors& colors)
-	: gridsizeF(grid_size_f), isActive(true), isHidden(false), font(&fonts), color(&colors)
+gui::EditorTextureSelector::EditorTextureSelector(float pos_x, float pos_y, float width, float height, float grid_size_f, sf::Texture* tile_sheet_texture, Fonts* fonts, Colors* colors)
+	: gridsizeF(grid_size_f), isActive(true), isHidden(false), font(fonts), color(colors)
 {
 	/* Init selector box */
 	this->selectorBox.setSize(sf::Vector2f(width, height));
@@ -341,4 +409,250 @@ void gui::EditorTextureSelector::Render(sf::RenderTarget& target)
 
 void gui::EditorTextureSelector::renderButtons()
 {
+}
+
+
+
+
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+
+
+		/*******************************/
+		/******** TextInput Box ********/
+		/*******************************/
+
+
+
+void gui::TextInputBox::initVars()
+{
+	this->textBoxText.setFont(*this->textFont);
+	text = " ";
+	this->textBoxText.setString(text);
+	this->textBoxText.setCharacterSize(30);
+	this->textBoxText.setFillColor(sf::Color::White);
+	this->textBoxText.setPosition(sf::Vector2f(this->posX, this->posY));
+}
+
+void gui::TextInputBox::initTextBox()
+{
+	this->textBox.setPosition(sf::Vector2f(this->posX, this->posY));
+	this->textBox.setSize(sf::Vector2f(this->textBoxWidth, this->textBoxHeight));
+	this->textBox.setFillColor(sf::Color::Black);
+}
+
+gui::TextInputBox::TextInputBox(float pos_x, float pos_y, float text_box_width, float text_box_height, sf::Color text_box_color, sf::Font& font, sf::RenderWindow* window)
+	:posX(pos_x), posY(pos_y), textBoxWidth(text_box_width), textBoxHeight(text_box_height), textBoxColor(text_box_color), textFont(&font)
+{
+	this->initVars();
+	this->initTextBox();
+
+	this->window = window;
+
+}
+
+gui::TextInputBox::~TextInputBox()
+{
+}
+
+void gui::TextInputBox::Update(sf::Event* sfmlevent)
+{
+	
+		/*if (sf::Event::TextEntered)
+		{
+			if (sfmlevent->text.unicode < 128)
+			{
+				this->text += static_cast<char>(sfmlevent->text.unicode);
+				this->textBoxText.setString(this->text);
+			}
+
+		}
+			
+			
+		if (sf::Event::KeyPressed)
+		{
+			if (sfmlevent->key.code == sf::Keyboard::BackSpace)
+			{
+				//this->workingText.pop_back();
+				this->text.pop_back();
+				this->textBoxText.setString(this->text);
+			}
+		}*/
+
+		
+	
+}
+
+void gui::TextInputBox::Render(sf::RenderTarget& target)
+{
+	target.draw(this->textBox);
+	target.draw(this->textBoxText);
+}
+
+
+
+
+
+
+
+
+
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+/*=========================================================================================================================================================================*/
+
+
+		/*******************************/
+		/********* Pause Menu  *********/
+		/*******************************/
+
+
+
+
+void gui::PauseMenu::initVars()
+{
+	this->keyTime = 0.f;
+	this->maxKeyTime = 20.f;
+}
+
+void gui::PauseMenu::initGraphics()
+{
+	this->background.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->color->lighterGrey.a = 165;
+	this->background.setFillColor(this->color->lighterGrey);
+	this->color->lighterGrey.a = 255;
+	this->background.setPosition(sf::Vector2f(this->window->getPosition()));
+}
+
+void gui::PauseMenu::initButtons()
+{
+	float pos_x(100.f), pos_y(500.f), button_width(150.f), button_height(60.f);
+	unsigned int button_text_character_size(30);
+	sf::Color idle_Text_Color(160, 160, 160, 240), hover_Text_Color(200, 200, 200, 240), active_Text_Color(200, 200, 200, 240),
+		idle_Color(0, 0, 0, 0), hover_Color(45, 45, 45, 0), active_color(250, 250, 250, 0);
+
+
+	/* Change colors to have 0 alpha level */
+
+
+	this->buttons["SAVE"] = new gui::Button(pos_x, pos_y, button_width, button_height,
+		"Save", this->font->dashHorizon, button_text_character_size,
+		idle_Text_Color, hover_Text_Color, active_Text_Color,
+		idle_Color, hover_Color, active_color);
+
+	this->buttons["LOAD"] = new gui::Button(pos_x, pos_y - 100, button_width, button_height,
+		"Load", this->font->dashHorizon, button_text_character_size,
+		idle_Text_Color, hover_Text_Color, active_Text_Color,
+		idle_Color, hover_Color, active_color);
+
+	this->buttons["CLEAR"] = new gui::Button(pos_x, pos_y + 100, button_width, button_height,
+		"Clear", this->font->dashHorizon, button_text_character_size,
+		idle_Text_Color, hover_Text_Color, active_Text_Color,
+		idle_Color, hover_Color, active_color);
+}
+
+gui::PauseMenu::PauseMenu(sf::RenderWindow* state_render_window, gui::Fonts* state_fonts, gui::Colors* state_colors)
+	:window(state_render_window), font(state_fonts), color(state_colors)
+{
+	
+	this->initVars();
+	this->initGraphics();
+	this->initButtons();
+}
+
+gui::PauseMenu::~PauseMenu()
+{
+}
+
+const bool& gui::PauseMenu::getPaused() const
+{
+	return this->isPaused;
+}
+
+const bool& gui::PauseMenu::getKeyTime()
+{
+	if (this->keyTime >= this->maxKeyTime) { this->keyTime = 0.f; return true; }
+	else { return false; }
+}
+
+const unsigned int& gui::PauseMenu::getPauseAction()
+{
+	return this->pauseAction;
+}
+
+
+
+
+void gui::PauseMenu::togglePaused()
+{
+	this->isPaused = !this->isPaused;
+}
+
+
+
+void gui::PauseMenu::Update(const float& dt, sf::Vector2f mouse_pos_window)
+{
+	/* Update key time */
+	this->updateKeyTime(dt);
+
+	/* Reset pause action */
+	this->pauseAction = -1;
+
+	/* Update internal cursor tracker */
+	this->mousePosWindow = mouse_pos_window;
+
+	/* Update buttons */
+	this->updateButtons(dt);
+}
+
+void gui::PauseMenu::updateButtons(const float& dt)
+{
+
+	/* Update buttons */
+	for (auto& it : this->buttons)
+	{
+		it.second->Update(this->mousePosWindow);
+	}
+
+	/* Check if buttons have been pressed */
+	if (this->buttons["SAVE"]->isPressed())
+	{
+		this->pauseAction = PauseMenuAction::SAVE;
+		//this->tileMap->saveTileMap("Test.txt");
+	}
+	if (this->buttons["LOAD"]->isPressed())
+	{
+		this->pauseAction = PauseMenuAction::LOAD;
+		//this->tileMap->loadTileMap("Test.txt");
+	}
+	if (this->buttons["CLEAR"]->isPressed())
+	{
+		this->pauseAction = PauseMenuAction::CLEAR;
+
+	}
+}
+
+void gui::PauseMenu::updateKeyTime(const float& dt)
+{
+	if (this->keyTime < this->maxKeyTime) { this->keyTime += 100 * dt; }
+	else {}
+}
+
+
+
+void gui::PauseMenu::Render(sf::RenderTarget* target)
+{
+	if (!target) { target = this->window; }
+
+	target->draw(this->background);
+	this->renderButtons(*target);
+}
+
+void gui::PauseMenu::renderButtons(sf::RenderTarget& target)
+{
+	for (auto& it : this->buttons)
+	{
+		it.second->Render(target);
+	}
 }

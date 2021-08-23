@@ -1,43 +1,9 @@
-#ifndef CARD_H
-#define CARD_H
+#ifndef GAME_H
+#define GAME_H
 
 #include "MainMenuState.h"
 
-class GfxSettings
-{
-public:
-	GfxSettings() { this->loadGfxFromFile("Settings File name"); }
-	~GfxSettings() { this->saveGfxToFile("Settings file name"); }
 
-	void loadGfxFromFile(std::string GfxFileName);
-	void saveGfxToFile(std::string GfxFileName);
-
-	/** Window Settings **/
-	sf::VideoMode screenModes;
-	std::string title;
-	sf::VideoMode videoMode;
-	bool fullscreen;
-	bool verticalSyncEnabled;
-	unsigned int frameRateLimit;
-	/** Game Dimensions **/
-	float gridSizeF;
-};
-
-class StateData
-{
-public:
-	StateData(){}
-	~StateData() { delete this->gfxSettings; }
-
-	/* Data Members */
-	sf::RenderWindow* window;
-	std::map<std::string, int>* supportedKeys;
-	std::stack<State*>* states;
-	float grid_size_f;
-
-	/* Graphics */
-	GfxSettings* gfxSettings;
-};
 
 class Game
 {
@@ -46,19 +12,20 @@ private:
 
 	/**** DATA MEMBERS ****/
 
-	/** State Stack **/
+	/* State Data - Contains State Stack, Window, Keybinds */
+	StateData* stateData;
+
+	/* State Stack */
 	std::stack<State*> states;
-	StateData stateData;
 
 	/** Window **/
 	sf::RenderWindow* window;
-	GfxSettings gfxSettings;
-
-	/* Mouse */
-	sf::Vector2i mouseDesktopPos;
 
 	/** Keybinds **/
 	std::map<std::string, int> supportedKeys;
+
+	/* Mouse */
+	sf::Vector2i mouseDesktopPos;
 
 	/** Events **/
 	sf::Event ev;
@@ -67,14 +34,13 @@ private:
 	sf::Clock gameClock;
 	float dt;
 
-
 	/**** METHODS(Private) ****/
-
 	/*** Inits ***/
 	void initVars();
 	void initWindow();
 	void initKeys();
 	void initStateStack();
+	void initStateData();
 
 public:
 
@@ -86,13 +52,11 @@ public:
 	const bool& run();
 
 	/**** ACCESSORS ****/
-
 	/*** Game States ***/
 	const bool& isRunning();
 
 
 	/**** METHODS ****/
-
 	/*** Updates ***/
 	void Update();
 	void updateTime();
@@ -102,12 +66,9 @@ public:
 	/*** Renders ***/
 	void Render();
 
-
-
 };
 
 
-;
 
 
 #endif

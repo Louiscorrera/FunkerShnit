@@ -2,7 +2,8 @@
 #define PLAYER_H
 
 
-#include "Sword.h"
+
+#include "Entity.h"
 
 
 
@@ -35,9 +36,11 @@ public:
 
 	/**** ACCESSORS ****/
 	const int& getMovementState() const;
+	
 
 	void toggleSwordEquip();
 	void toggleAttacking();
+	void attackStab();
 
 	/**** METHODS ****/
 	

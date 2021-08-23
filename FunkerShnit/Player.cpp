@@ -74,6 +74,8 @@ const int& Player::getMovementState() const
 	}
 }
 
+
+
 void Player::toggleSwordEquip()
 {
 	this->sword->toggleEquip();
@@ -82,6 +84,12 @@ void Player::toggleSwordEquip()
 void Player::toggleAttacking()
 {
 	this->sword->toggleAttacking();
+}
+
+void Player::attackStab()
+{
+	this->sword->isAttacking = true;
+	
 }
 
 
@@ -143,7 +151,6 @@ void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int swo
 {
 	this->sword->updateSwordRanges(this->getEntityGlobalBounds());
 	this->sword->Update(dt, mouse_pos_window);
-	this->sword->updateSwordAttack(sword_attack_style);
 	this->sword->animateSword(this->getEntityGlobalBounds());
 }
 
@@ -171,9 +178,6 @@ void Player::Render(sf::RenderTarget& target)
 		}
 
 	}
-	
-
 	/* If a sword is equipped draw it*/
-	
 }
 

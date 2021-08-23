@@ -8,7 +8,24 @@ void TileMap::initTextures()
 	{
 		std::cout << "ERROR:InitTextures()::TILEMAP Could not load tile texture sheet from file\n";
 	}
+
+	this->textureFileNames[EnemyType::ENEMY1] = ""; //Add these in!!!
+
+	this->textureFileNames[EnemyType::ENEMY2] = "";
+
+	this->textureFileNames[EnemyType::ENEMY3] = "";
+
+	for (int i = EnemyType::ENEMY1; i < EnemyType::ENEMY3; i++)
+	{
+		if (this->enemyTextures[i].loadFromFile(this->textureFileNames[i]))
+		{
+			throw "ERROR::InitTextures()::TILEMAP could not load one or more of the enemytextures ";
+		}
+	}
+
 }
+
+
 
 void TileMap::clearMap()
 {
@@ -34,10 +51,7 @@ void TileMap::clearMap()
 void TileMap::initTileMap(std::string texture_sheet_file)
 {
 
-	/*if (!this->tileTextureSheet.loadFromFile(texture_sheet_file))
-	{
-		std::cout << "ERROR:InitTextures()::TILEMAP Could not load tile texture sheet from file\n";
-	}*/
+	this->initTextures();
 
 	/* Creating an empty TileMap w/default tile settings (Red fill & green outline) */
 	this->tileMap.resize(this->maxSizeX, std::vector<std::vector < std::vector <Tile*>>>());
@@ -61,14 +75,22 @@ void TileMap::initTileMap(std::string texture_sheet_file)
 	}
 }
 
-TileMap::TileMap(float max_size_x, float max_size_y, float max_layers, float grid_size_f)
-	:maxSizeX(max_size_x), maxSizeY(max_size_y), maxLayers(max_layers), gridSizeF(grid_size_f), collisionEnabled(false)
+void TileMap::initVars()
 {
+	collisionEnabled = false;
+	maxTiles = 10; 
+	tileType = TileType::REGULAR; 
+	enemySpawnerEnabled = false;
+	enemyType = EnemyType::ENEMY1;
+}
+
+TileMap::TileMap(float max_size_x, float max_size_y, float max_layers, float grid_size_f)
+	:maxSizeX(max_size_x), maxSizeY(max_size_y), maxLayers(max_layers), gridSizeF(grid_size_f)
+{
+	this->initVars();
 	this->initTextures();
 	this->initTileMap();
-	this->overWriteEnabled = false;
-	this->maxTiles = 10;
-	this->tileType = TileType::REGULAR;
+	
 }
 
 TileMap::~TileMap()
@@ -90,12 +112,6 @@ TileMap::~TileMap()
 	
 }
 
-void TileMap::toggleOverwrite()
-{
-	if (this->overWriteEnabled) { this->overWriteEnabled = false; }
-	else { this->overWriteEnabled = true; }
-
-}
 
 void TileMap::toggleCollision()
 {
@@ -104,25 +120,66 @@ void TileMap::toggleCollision()
 
 void TileMap::toggleType()
 {
-	
-	if (this->tileType == TileType::DAMAGE)
+	/* If toggling and type is Enemy reset type to Default = 0 */
+	if (this->tileType == TileType::ENEMY)
 	{
 		this->tileType = TileType::REGULAR;
+		/* No longer Enemy type and disable enemy spawner enabling feature */
+		this->enemySpawnerEnabled = false;
 	}
 	else
 	{
 		tileType++;
 	}
+
+	/* Check, at the end of the type toggle, if the type is enemy. Enable member enemySpawnerEnabled to true */
+	if (this->tileType == TileType::ENEMY)
+	{
+		this->enemySpawnerEnabled = true;
+	}
 }
 
-const bool& TileMap::getOverWrite() const
+void TileMap::toggleEnemySpawner()
 {
-	return this->overWriteEnabled;
+	this->enemySpawnerEnabled = !this->enemySpawnerEnabled;
 }
+
+void TileMap::toggleEnemyType()
+{
+	
+	if (this->enemySpawnerEnabled)
+	{
+		if (this->enemyType == EnemyType::ENEMY3)
+		{
+			this->enemyType = EnemyType::ENEMY1;
+		}
+		else
+		{
+			enemyType++;
+		}
+	}
+	else
+	{
+		std::cout << "Could not toggle enemy type as tile type is not ENEMY\n";
+	}
+
+	
+}
+
 
 const bool& TileMap::getCollision() const
 {
 	return this->collisionEnabled;
+}
+
+const bool& TileMap::getEnemySpawner() const
+{
+	return this->enemySpawnerEnabled;
+}
+
+const int& TileMap::getEnemyType() const
+{
+	return this->enemyType;
 }
 
 const int& TileMap::getTileType() const
@@ -159,6 +216,7 @@ void TileMap::saveTileMap(std::string filename)
 
 	/* TileMap Specs */
 	ofs << this->maxSizeX << " " << this->maxSizeY << " " << this->maxLayers << " " << this->gridSizeF << " " << "Resources/Images/Tiles/tilesheet1.2.png" << " ";
+
 
 	/* Tile Specs */
 	for (size_t x = 0; x < this->maxSizeX; x++)
@@ -220,7 +278,9 @@ void TileMap::loadTileMap(std::string filename)
 	int texture_rect_left(0), texture_rect_top(0);
 	sf::IntRect rect;
 	bool collision(false);
-	int tile_type(0);
+	int tile_type(0), enemy_type(0);
+	
+	
 
 	/* Init tile map before initTileMap(string) to ensure the correct texture sheet is loaded, as well as all the other tile map dimensions */
 	ifs >> this->maxSizeX >> this->maxSizeY >> this->maxLayers >> this->gridSizeF >> texture_sheet_file;
@@ -232,11 +292,18 @@ void TileMap::loadTileMap(std::string filename)
 	rect.width = this->gridSizeF;
 	rect.height = this->gridSizeF;
 
-	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision >> tile_type)
+	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision >> tile_type >> enemy_type)
 	{
 		rect.left = texture_rect_left;
 		rect.top = texture_rect_top;
-		this->tileMap[grid_cord_x][grid_cord_y][layer].push_back (new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type));
+		if (enemy_type >= 0)
+		{
+			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type, enemy_type, &this->enemyTextures[enemy_type]));
+		}
+		else
+		{
+			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type));
+		}
 	}
 	
 	
@@ -260,14 +327,33 @@ bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, cons
 		&& layer < this->maxLayers && layer >= 0)
 	{
 			
-			//if (this->collisionEnabled)
-			//{
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
-			//}
-			//else
-			//{
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
-			//}
+		/* Check if enemy spawner is enabled */
+		if (this->enemySpawnerEnabled)
+		{
+			switch (this->enemyType)
+			{
+			case EnemyType::ENEMY1:
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type, 
+					this->enemyType, &this->enemyTextures[EnemyType::ENEMY1]));
+				break;
+			case EnemyType::ENEMY2:
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
+					this->enemyType, &this->enemyTextures[EnemyType::ENEMY2]));
+				break;
+			case EnemyType::ENEMY3:
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
+					this->enemyType, &this->enemyTextures[EnemyType::ENEMY3]));
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
+
+		}
+			
 			return true;
 		
 	}
@@ -301,6 +387,7 @@ void TileMap::clearCurrentMap()
 
 void TileMap::checkTileCollision(const float& dt, Entity* entity)
 {
+	
 
 	/* Check for collision with map boundary */
 
@@ -426,6 +513,67 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 	{
 		//No entity
 	}
+}
+
+void TileMap::checkEnemySpawners(const float& dt, std::vector<Entity*>* game_enemies, Entity* entity)
+{
+
+	/* Local vars to store distance from entity to render */
+	int startX(0), endX(0), startY(0), endY(0), layer(0);
+
+	/* Set and update the the offset from the entity to render around */
+	startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 5;
+	if (startX < 0) { startX = 0; }
+	if (endX > this->maxSizeX) { endX = this->maxSizeX; }
+
+	endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 5;
+	if (endX > this->maxSizeX) { endX = this->maxSizeX; }
+
+	startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 5;
+	if (startY < 0) { startY = 0; }
+
+	endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 5;
+	if (endY < 0) { endY = 0; }
+	if (endY > this->maxSizeY) { endY = this->maxSizeY - 1; }
+
+
+
+	for (size_t x = startX; x < endX; x++)
+	{
+		for (size_t y = startY; y < endY; y++)
+		{
+			for (size_t k = 0; k < this->tileMap[x][y][layer].size(); k++)
+			{
+				if (this->tileMap[x][y][layer][k]) /* if the tile is not null */
+				{
+					if (this->tileMap[x][y][layer][k]->enemySpawner) /* IF the tile has a valid enemy spawner */
+					{
+						/* Update spawner */
+						this->tileMap[x][y][layer][k]->enemySpawner->Update(dt); /* Update the spawner */
+
+						/* Attempt to spawn */ 
+						/* If spawnenemy returns NULL */
+						if (!this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy()) 
+						{
+							//Do Nothing
+						}
+						else
+						{
+							/* If the spawner is not active, activate spawner */
+							if (!this->tileMap[x][y][layer][k]->enemySpawner->getSpawnerActive()) 
+							{
+								this->tileMap[x][y][layer][k]->enemySpawner->toggleSpawnerActive();
+							}
+
+							/* Add new enemy back to gamestate's enemy array */
+							game_enemies->push_back(this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy());
+						}
+					}else{}
+				}else{}
+			}
+		}
+	}
+
 }
 
 void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)

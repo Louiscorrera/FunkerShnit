@@ -5,39 +5,32 @@
 /**** METHODS(Private) ****/
 
 /*** Inits ***/
+void Game::initVars()
+{
+	/* Game Clock */
+	this->gameClock.restart();
+
+	this->mouseDesktopPos = sf::Mouse::getPosition();
+}
+
+
 void Game::initWindow()
 {
-	/* Open in file stream to read from window config file */
-	std::ifstream ifs("Config/window_config.txt");
-	if (ifs.is_open() == false)
-	{
-		std::cout << "ERROR::InitWindow()::Game Window config file could not be opened to initialize window\n";
-	}
-	
-	/* Defaults */
-	this->gfxSettings.videoMode = sf::VideoMode::getDesktopMode();
-	this->gfxSettings.title = "Default";
-	this->gfxSettings.fullscreen = false;
-	this->gfxSettings.frameRateLimit = 120;
+	/* Must create state data obj here because it is used in the initializing of the window below */
+	this->stateData = new StateData();
+	//this->stateData->gfxSettings->loadGfxFromFile("File to load window settins from");
 
-	/* Take in data from window config file */
-	ifs >> this->gfxSettings.videoMode.width >> this->gfxSettings.videoMode.height;
-	ifs >> this->gfxSettings.title;
-	ifs >> this->gfxSettings.fullscreen;
-	ifs >> this->gfxSettings.frameRateLimit;
-
-	ifs.close();
-
+	/* Initialize window using statedata's gfxsettings */
 	/* Check if fullscreen or not */
-	if (this->gfxSettings.fullscreen)
+	if (this->stateData->gfxSettings->fullscreen) //Fullscreen
 	{
-		this->window = new sf::RenderWindow(sf::VideoMode(this->gfxSettings.videoMode), this->gfxSettings.title, sf::Style::Titlebar);
-		this->window->setFramerateLimit(this->gfxSettings.frameRateLimit);
+		this->window = new sf::RenderWindow(sf::VideoMode(this->stateData->gfxSettings->resolution), stateData->gfxSettings->title, sf::Style::Titlebar);
+		this->window->setFramerateLimit(stateData->gfxSettings->frameRateLimit);
 	}
-	else
+	else //Not fullscreen
 	{
-		this->window = new sf::RenderWindow(sf::VideoMode(this->gfxSettings.videoMode), this->gfxSettings.title, sf::Style::Titlebar );
-		this->window->setFramerateLimit(this->gfxSettings.frameRateLimit);
+		this->window = new sf::RenderWindow(sf::VideoMode(this->stateData->gfxSettings->resolution), this->stateData->gfxSettings->title, sf::Style::Titlebar );
+		this->window->setFramerateLimit(this->stateData->gfxSettings->frameRateLimit);
 	}
 
 }
@@ -68,20 +61,17 @@ void Game::initKeys()
 
 void Game::initStateStack()
 {
-	this->states.push(new MainMenuState(this->window, &this->supportedKeys, &this->states, this->gfxSettings.gridSizeF));
+	this->states.push(new MainMenuState(this->stateData));
 }
 
-
-void Game::initVars()
+void Game::initStateData()
 {
-	/* Game Clock */
-	this->gameClock.restart();
-
-	/* Set grid(float val) for all of game's grid */
-	this->gfxSettings.gridSizeF = 50.f;
-
-	this->mouseDesktopPos = sf::Mouse::getPosition();
+	this->stateData->states = &this->states;
+	this->stateData->window = this->window;
+	this->stateData->supportedKeys = &this->supportedKeys;
 }
+
+
 
 
 
@@ -92,13 +82,17 @@ Game::Game()
 	this->initVars();
 	this->initWindow();
 	this->initKeys();
+	this->initStateData();
 	this->initStateStack();
+	
 }
 
 
 Game::~Game()
 {
 	delete this->window;
+	delete this->stateData;
+	
 }
 
 
@@ -185,6 +179,14 @@ void Game::updateSFMLEvents()
 			{
 				this->window->close();
 			}
+		/*case sf::Event::TextEntered:
+			if (this->ev.text.unicode < 128)
+			{
+				std::cout << " Text Entered: " << this->ev.text.unicode << "\n";
+			}
+			break;*/
+
+		default:
 			break;
 		}
 	}
@@ -207,10 +209,6 @@ void Game::updateMousePos()
 	
 }
 
-
-
-
-
 /*** Renders ***/
 void Game::Render()
 {
@@ -224,10 +222,12 @@ void Game::Render()
 	this->window->display();
 }
 
-void GfxSettings::loadGfxFromFile(std::string GfxFileName)
-{
-}
 
-void GfxSettings::saveGfxToFile(std::string GfxFileName)
-{
-}
+
+
+
+
+
+
+
+

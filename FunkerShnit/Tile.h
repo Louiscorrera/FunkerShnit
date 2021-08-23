@@ -1,9 +1,11 @@
 #ifndef TILE_H
 #define TILE_H
 
-#include "AnimationComponent.h"
+#include "EnemySpawner.h"
 
-enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE, ANIMATED};
+
+enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE, ANIMATED, ENEMY};
+enum EnemyType { ENEMY1 = 0, ENEMY2, ENEMY3 };
 
 class Tile
 {
@@ -19,12 +21,14 @@ private:
 	float tileWidth;
 	float tileHeight;
 
+	int enemyType;
+
+
 	AnimationComponent* animationComponent;
 
-	/* Graphics */
 	
-
 	/**** METHODS(Private) ****/
+	void initEnemySpawner(int enemyType, sf::Texture* enemy_texture);
 
 protected:
 
@@ -35,9 +39,18 @@ public:
 	bool collison;
 	unsigned type;
 
+	/* Enemy Spawner */
+	EnemySpawner* enemySpawner;
+
+
+public:
+
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
 	Tile(unsigned int grid_pos_x, unsigned int grid_pos_y, float tile_width, float tile_height); /* Tile constructor without a texture (Default) */
-	Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, const sf::Texture& tile_texture, const sf::IntRect& texture_selector, bool collision = false, unsigned int type = 0); /* Tile constructor with a texture */
+	Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, 
+		const sf::Texture& tile_texture, const sf::IntRect& texture_selector, 
+		bool collision = false, unsigned int type = 0, 
+		int enemy_type = -1, sf::Texture* enemyTexture = NULL); /* Tile constructor with a texture */
 	~Tile();
 
 	/**** ACCESSORS ****/

@@ -1,7 +1,8 @@
 #pragma once
 
+
 #include "Weapon.h"
-#include "Entity.h"
+
 
 enum SwordAttack{ DEFAULT = 0, STAB, CRUSH, SLASH, GYRATE };
 
@@ -16,12 +17,17 @@ private:
 	sf::FloatRect textureRect;
 
 	/* Sword Hitbox */
-	HitboxComponent* swordHitboxComponent;
+	
 
 	/* Sword State */
 	int swordAttack;
-	bool isAttacking;
 	sf::Vector2f swingVelocity;
+	bool combat;
+	
+	float attackTime;
+
+	float attackX;
+	float attackY;
 
 	
 	/* Sword Range */
@@ -42,6 +48,8 @@ private:
 protected:
 
 public:
+
+	bool isAttacking;
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
 	Sword(std::string item_name, unsigned int item_level, unsigned int item_value, unsigned int item_weight, 
 		bool item_wieldable, bool item_consumable, 
@@ -53,6 +61,7 @@ public:
 	const bool& getSwordState() const;
 	const bool& getAttackTimer();
 
+
 	void toggleEquip();
 	void toggleAttacking();
 
@@ -61,13 +70,13 @@ public:
 	/*** Updates ***/
 	void Update(const float& dt, sf::Vector2i mouse_pos_window);
 	void updateMousePos(sf::Vector2i mouse_pos_window);
-	void updateSwordAttack(int sword_attack = SwordAttack::DEFAULT);
 	void updateAttackTimer(const float& dt);
 	void updateSwordRanges(sf::FloatRect playerBounds);
 
 	void animateSword(sf::FloatRect playerBounds);
 	void rotateSword(sf::FloatRect playerBounds);
 	void floatSword();
+	void attack();
 	void resetSword();
 
 	/*** Renders ***/

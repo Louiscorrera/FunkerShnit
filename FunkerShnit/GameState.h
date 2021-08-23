@@ -1,4 +1,4 @@
-#ifndef GAMESTATE_H
+   #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
 
@@ -24,7 +24,10 @@ private:
 	sf::Texture tileMapTextureSheet;
 
 	/* Pause Menu */
-	PauseState* pauseMenu;
+
+	/* Sword Action */
+	int swordAction;
+	
 
 	/* View */
 	sf::View mainView;
@@ -52,7 +55,7 @@ protected:
 
 public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
-	GameState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f);
+	GameState(StateData* state_data);
 	virtual ~GameState();
 
 	/**** ACCESSORS ****/
@@ -64,6 +67,8 @@ public:
 	void updatePlayerInput(const float& dt);
 	void updateTileMap(const float& dt);
 	void updateView(const float& dt);
+	void updatePlayerMovement(const float& dt);
+	void updatePlayerWeapon();
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget* target = NULL);

@@ -2,39 +2,66 @@
 #define STATE_H
 
 
+#include "TileMap.h"
+#include "gui.h"
 
-struct Colors
+class State;
+
+class GfxSettings
 {
-	/* Colors */
-	sf::Color pukeGreen;
-	sf::Color darkRed;
-	sf::Color lightPurple1;
-	sf::Color darkPurple1;
-	sf::Color darkPurple2;
-	sf::Color lightGreen;
-	sf::Color teal;
-	sf::Color lightGrey;
-	sf::Color lighterGrey;
+public:
+	GfxSettings() { this->defaultSettings(); }
+	~GfxSettings() {  }
 
-	Colors();
+	void defaultSettings() {
+		this->title = "Default";
+		this->resolution = sf::VideoMode::getDesktopMode();
+		this->fullscreen = false;
+		this->verticalSyncEnabled = false;
+		this->frameRateLimit = 120;
+		this->gridSizeF = 50;
+	}
 
-	void initColors();
+	void loadGfxFromFile(std::string GfxFileName);
+	void saveGfxToFile(std::string GfxFileName);
+
+	/** Window Settings **/
+	std::string title;
+	sf::VideoMode resolution;
+	bool fullscreen;
+	bool verticalSyncEnabled;
+	unsigned int frameRateLimit;
+	/** Game Dimensions **/
+	float gridSizeF;
 };
 
-struct Fonts
+class StateData
 {
-	sf::Font corleone;
-	sf::Font dashHorizon;
-	sf::Font franchise;
-	sf::Font marketDeco;
-	sf::Font amazDoomRight;
+public:
+	StateData();
+	~StateData() {
+		delete this->gfxSettings;
+		delete this->color;
+		delete this->font;
+	}
 
-	Fonts();
+	/* Data Members */
+	sf::RenderWindow* window;
+	std::map<std::string, int>* supportedKeys;
+	std::stack<State*>* states;
 
-	void initFonts();
+	/* Graphics */
+	GfxSettings* gfxSettings;
+
+	/* Colors __Public so all states have access to these pre defined colors */
+	gui::Colors* color;
+	/* Fonts __Public so all states have access to these pre defined colors */
+	gui::Fonts* font;
+
+	/* Methods */
+	void initGridSize() { this->gfxSettings->gridSizeF = 50; }
+	void initFontsColors() { this->font = new gui::Fonts(); this->color = new gui::Colors(); }
 };
-
-
 
 
 class State
@@ -50,26 +77,18 @@ private:
 	/*** Inits ***/
 	/** Pure Virtuals **/
 	virtual void initKeybinds() = 0;
-	/* Non-Pure Virtuals*/
-	void initColors();
-	void initFonts();
 
 protected:
 
 	/**** DATA MEMBERS(Protected) ****/
 
-	/** State Stack **/
-	std::stack<State*>* states;
-
-	/** Window **/
-	sf::RenderWindow* window;
-
-	/** Game Dimension **/
-	float grifSizeF;
+	StateData* stateData; //*** Definition/Declaration is Inside gui.h!!!! ***//
 
 	/** Keybinds **/
-	std::map<std::string, int>* supportedKeys;
 	std::map<std::string, int> keyBinds;
+
+	/* Pause Menu */
+	gui::PauseMenu* pauseMenu;
 
 	/* Keys & Time */
 	float keyTime;
@@ -84,7 +103,7 @@ protected:
 	
 public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
-	State(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f);
+	State(StateData* state_data);
 	virtual ~State();
 
 	/**** ACCESSORS ****/
@@ -106,11 +125,6 @@ public:
 	virtual void Render(sf::RenderTarget* target = NULL) = 0;
 	/* Non-Pure Virtuals */
 
-
-	/* Colors __Public so all states have access to these pre defined colors */
-	Colors* color;
-	/* Fonts __Public so all states have access to these pre defined colors */\
-	Fonts* font;
 
 };
 

@@ -3,7 +3,7 @@
 
 
 
-#include "PauseState.h"
+#include "State.h"
 
 class EditorState : public State
 {
@@ -31,7 +31,7 @@ private:
 	sf::Text mouseTileInfo;
 
 	/* Pause Menu */
-	PauseState* pauseMenu;
+	gui::PauseMenu* pauseMenu;
 
 	/* View */
 	sf::View mainView;
@@ -53,12 +53,13 @@ protected:
 
 public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
-	EditorState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f);
+	EditorState(StateData* state_data);
 	virtual ~EditorState();
 
 	/**** ACCESSORS ****/
 
 	/**** METHODS ****/
+	
 
 	/*** Updates ***/
 	void Update(const float& dt);
@@ -67,7 +68,8 @@ public:
 	void updateGui(const float& dt);
 	void updateMouseTileInfo();
 	void updateView();
-	void updatePauseMenu();
+	void updatePauseMenuAction();
+	
 	
 
 	/*** Renders ***/

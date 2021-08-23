@@ -2,7 +2,7 @@
 #define TILEMAP_H
 
 #include "Tile.h"
-#include "Player.h"
+
 
 
 class TileMap
@@ -17,6 +17,10 @@ private:
 	sf::Texture tileTextureSheet;
 	sf::IntRect* textureSelector;
 
+	/* Enemy Spawner Textures */
+	sf::Texture enemyTextures[3];
+	std::string textureFileNames[3];
+
 	/* Deferred Render */
 	std::stack<Tile*> deferredRenderStack;
 
@@ -28,19 +32,24 @@ private:
 	float gridSizeF;
 
 	/* Map Updates */
-	bool overWriteEnabled;
 	bool collisionEnabled;
 	int tileType;
+	
+	/* Enemy Specific */
+	bool enemySpawnerEnabled;
+	int enemyType;
 
 	/* Key Timer */
 	float keyTimer;
 	float keyTimerMax;
+	
 
 	/**** METHODS(Private) ****/
 	void initTextures();
 
 	void clearMap();
 	void initTileMap(std::string texture_sheet_file = "");
+	void initVars();
 
 
 protected:
@@ -51,11 +60,15 @@ public:
 	~TileMap();
 
 	/**** ACCESSORS ****/
-	void toggleOverwrite();
 	void toggleCollision();
 	void toggleType();
-	const bool& getOverWrite() const;
+	void toggleEnemySpawner();
+	void toggleEnemyType();
+
+
 	const bool& getCollision() const;
+	const bool& getEnemySpawner() const;
+	const int& getEnemyType() const;
 	const int& getTileType() const;
 	const sf::Vector2f& getTileMapMaxSize();
 	
@@ -73,7 +86,9 @@ public:
 		bool collision = false, int tile_type = 0);
 	bool removeTile(const float& pos_x, const float& pos_y, const float& layer);
 	void clearCurrentMap();
+
 	void checkTileCollision(const float& dt, Entity* entity = NULL);
+	void checkEnemySpawners(const float& dt, std::vector<Entity*>* game_enemies, Entity* entity);
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL);

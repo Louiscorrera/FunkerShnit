@@ -18,7 +18,7 @@ void EditorState::initKeybinds()
 	std::string key_bind(""), key("");
 	while (ifs >> key_bind >> key)
 	{
-		this->keyBinds[key_bind] = this->supportedKeys->at(key);
+		this->keyBinds[key_bind] = this->stateData->supportedKeys->at(key);
 	}
 
 	ifs.close();
@@ -28,18 +28,18 @@ void EditorState::initKeybinds()
 void EditorState::initText()
 {
 	/* Init error message text */
-	this->text.setFont(this->font->marketDeco);
+	this->text.setFont(this->stateData->font->marketDeco);
 	this->text.setString("Editor State");
 	this->text.setFillColor(sf::Color::Black);
 	this->text.setCharacterSize(36.f);
 	this->text.setPosition(sf::Vector2f(
-		this->window->getSize().x / 2.f - this->text.getLocalBounds().width /2.f,
-		this->window->getSize().y / 20.f
+		this->stateData->window->getSize().x / 2.f - this->text.getLocalBounds().width /2.f,
+		this->stateData->window->getSize().y / 20.f
 		));
 
 	/* Init mouse tile info */
 	
-	this->mouseTileInfo.setFont(this->font->marketDeco);
+	this->mouseTileInfo.setFont(this->stateData->font->marketDeco);
 	this->mouseTileInfo.setString("Default");
 	this->mouseTileInfo.setCharacterSize(24.f);
 	this->mouseTileInfo.setFillColor(sf::Color::Black);
@@ -48,7 +48,7 @@ void EditorState::initText()
 
 void EditorState::initTileMap()
 {
-	this->tileMap = new TileMap(50.f, 50.f, 1.f, this->grifSizeF);
+	this->tileMap = new TileMap(50.f, 50.f, 1.f, this->stateData->gfxSettings->gridSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
@@ -65,13 +65,13 @@ void EditorState::initButtons()
 void EditorState::initGui()
 {
 	/* Inits a tileMap tile selector */
-	this->tileSelectorGuide.setSize(sf::Vector2f(this->grifSizeF, this->grifSizeF));
+	this->tileSelectorGuide.setSize(sf::Vector2f(this->stateData->gfxSettings->gridSizeF, this->stateData->gfxSettings->gridSizeF));
 	this->tileSelectorGuide.setOutlineThickness(3.f);
 	this->tileSelectorGuide.setOutlineColor(sf::Color::Magenta);
 	this->tileSelectorGuide.setTexture(&this->tileMapTextureSheet);
 
 	/* Init texture selector intRect*/
-	this->textureSelector = sf::IntRect(0, 0, static_cast<int>(this->grifSizeF), static_cast<int>(this->grifSizeF));
+	this->textureSelector = sf::IntRect(0, 0, static_cast<int>(this->stateData->gfxSettings->gridSizeF), static_cast<int>(this->stateData->gfxSettings->gridSizeF));
 
 	this->tileSelectorGuide.setTextureRect(this->textureSelector);
 	this->tileSelectorGuide.setFillColor(sf::Color(0, 0, 0, 150));
@@ -81,19 +81,19 @@ void EditorState::initGui()
 	this->initButtons();
 
 	/* Inits tile map texure selector interface */
-	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 450.f, 500.f, this->grifSizeF, &this->tileMapTextureSheet, *this->font, *this->color);
+	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 450.f, 500.f, this->stateData->gfxSettings->gridSizeF, &this->tileMapTextureSheet, this->stateData->font, this->stateData->color);
 }
 
 void EditorState::initView()
 {
-	this->mainView.setSize(sf::Vector2f(this->window->getSize().x, this->window->getSize().y));
+	this->mainView.setSize(sf::Vector2f(this->stateData->window->getSize().x, this->stateData->window->getSize().y));
 
-	this->mainView.setCenter(this->window->getSize().x / 2.f, this->window->getSize().y / 2.f);
+	this->mainView.setCenter(this->stateData->window->getSize().x / 2.f, this->stateData->window->getSize().y / 2.f);
 }
 
 void EditorState::initPauseMenu()
 {
-	this->pauseMenu = new PauseState(this->window, this->supportedKeys, this->states, this->grifSizeF, *this->font, *this->color);
+	this->pauseMenu = new gui::PauseMenu(this->stateData->window, this->stateData->font, this->stateData->color);
 }
 
 void EditorState::initSounds()
@@ -112,8 +112,8 @@ void EditorState::initSounds()
 }
 
 
-EditorState::EditorState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f)
-	:State(window, supportedKeys, states, grid_size_f), pauseMenu(NULL)
+EditorState::EditorState(StateData* state_data)
+	:State(state_data)// pauseMenu(NULL)
 {
 	this->initKeybinds();
 	this->initView();
@@ -129,45 +129,62 @@ EditorState::EditorState(sf::RenderWindow* window, std::map<std::string, int>* s
 
 EditorState::~EditorState()
 {
-	delete this->pauseMenu;
+	
 }
 
 void EditorState::Update(const float& dt)
 {
 	//system("cls");
 	//std::cout << "F_Window_X: " << this->mousePosWindow.x << " F_Window_Y: " << this->mousePosWindow.y;
-	
-
-
-	if (this->pauseMenu->getPaused() == true)
-	{
-		this->mainMusic.pause();
-		this->pauseMenu->editorUpdate(dt, static_cast<sf::Vector2f>(this->mousePosWindow));
-		this->updatePauseMenu();
-	}
-	else
-	{
-		if (this->mainMusic.getStatus() != sf::Music::Playing)
-		{
-			this->mainMusic.setVolume(40.f);
-			this->mainMusic.setLoop(true);
-			this->mainMusic.play();
-		}
 
 		
-		this->updateMousePos(&this->mainView);
 		this->updateKeytime(dt);
-		this->updateView();
-		this->updateMouseTileInfo();
-		this->updateGui(dt);
-		this->updateEditorInput();
-		this->updateButtons(); //Empty right now, leaving bc i may use later :)
-	}
+
+
+		if (this->pauseMenu->getPaused() == true)
+		{
+			this->updateMousePos();
+			this->mainMusic.pause(); //Pause music
+			this->pauseMenu->Update(dt, this->mousePosView);
+			this->updatePauseMenuAction();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("PAUSE"))) && this->getKeyTime())
+			{
+				this->pauseMenu->togglePaused();
+			}
+		
+		}
+		else
+		{
+			/* Check is music is not already playing music */
+			if (this->mainMusic.getStatus() != sf::Music::Playing)
+			{
+				/* Set music on loop */
+				this->mainMusic.setVolume(40.f);
+				this->mainMusic.setLoop(true);
+				this->mainMusic.play();
+			}
+
+			
+			this->updateMousePos(&this->mainView);
+		
+			this->updateView();
+		
+			this->updateGui(dt);
+			
+			this->updateEditorInput();
+			
+			this->updateMouseTileInfo();
+			
+			this->updateButtons(); //Empty right now, leaving bc i may use later :)
+		}
+	
+		
+}
 
 	
 	
 	
-}
+
 
 
 void EditorState::updateEditorInput()
@@ -178,7 +195,7 @@ void EditorState::updateEditorInput()
 	{
 		if (this->mousePosWindow.x > 100 || this->mousePosWindow.y > 50) /* If the cursor is not within the bounds of the "Hide/Show" button, enable adding/removing tiles()()*/
 		{
-			/* If left mouse is clicked attempt to add tile */
+			/* If left mouse is clicked, attempt to add tile */
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->getKeyTime())
 			{ 
 				/* Check if collision is enabled, add a collision tile if so */
@@ -187,12 +204,12 @@ void EditorState::updateEditorInput()
 					/* Display tile added confirmation message if tile was added */
 					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true, this->tileMap->getTileType()))
 					{
-						this->click.play();
-						this->text.setString("Tile Added!");
+						this->click.play(); //Click into place fx
+						this->text.setString("Tile Added!"); //attempt status displayed to user
 					}
 					else /* Display tile can't be added message if tile is full */
 					{
-						this->text.setString("Tile Full!");
+						this->text.setString("Tile Full!"); //attempt status displayed to user
 					}
 				}
 				else /* Check if collision is disabled, add a regular tile (non-collision) if so */
@@ -200,26 +217,27 @@ void EditorState::updateEditorInput()
 					/* Display tile added confirmation message if tile was added */
 					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, false, this->tileMap->getTileType()))
 					{
-						this->click.play();
-						this->text.setString("Tile Added!");
+						this->click.play(); //Click into place fx
+						this->text.setString("Tile Added!"); //attempt status displayed to user
 					}
 					else /* Display tile can't be added message if tile is full */
 					{
-						this->text.setString("Tile Full!");
+						this->text.setString("Tile Full!"); //attempt status displayed to user
 					}
 				}
 
 			}
+			/* If mouse right click, attempt to remove tile */
 			else  if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && this->getKeyTime())
 			{
 				/* Display tile removed confirmation message if tile was removed */
 				if (this->tileMap->removeTile(this->mousePosGrid.x, this->mousePosGrid.y, 0))
 				{
-					this->text.setString("Tile Removed!");
+					this->text.setString("Tile Removed!"); //attempt status displayed to user 
 				}
 				else /* Display tile can't be removed if there is no tile to remove */
 				{
-					this->text.setString("No Tile to Remove!");
+					this->text.setString("No Tile to Remove!"); //attempt status displayed to user 
 				}
 
 			}
@@ -227,11 +245,7 @@ void EditorState::updateEditorInput()
 		}else{} /* If the cursor is not within the bounds of the "Hide/Show" button, disable adding/removing tiles ()()*/
 	}else{}/* If the texture selector interface is open disable adding/removing tiles ()*/
 	
-	/* Check for pause key - pause if pressed */
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("PAUSE"))) && this->getKeyTime())
-	{
-		this->pauseMenu->togglePaused();
-	}
+	
 
 	/* check if the quit button has been pressed, end game state if so */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("CLOSE"))) && this->getKeyTime())
@@ -240,21 +254,43 @@ void EditorState::updateEditorInput()
 	}
 
 	/* Toggle tile map overwrite capabilities */
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_OVERWRITE"))) && this->getKeyTime())
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_OVERWRITE"))) && this->getKeyTime())
 	{
 		this->tileMap->toggleOverwrite();
-	}
+	}*/
+
+	/* Toggle Tile-to-add's collision (Enabled | Disabled) */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_COLLISION"))) && this->getKeyTime())
 	{
 		this->tileMap->toggleCollision();
 	}
+
+	/* Toggle Tile-to-add's type (Cycles)__See Tile.h for enum types) */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_TYPE"))) && this->getKeyTime())
 	{
 		this->tileMap->toggleType();
 	}
 
+	/* Toggle Tile-to-add's enemy type, if enemy spawner is enabled (Cycles)__See Tile.h for enum types) */
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_ENEMY_TYPE"))) && this->getKeyTime())
+	{
+		this->tileMap->toggleEnemyType();
+	}
 
+	/* Pause menu */
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("PAUSE"))) && this->getKeyTime())
+	{
+		this->pauseMenu->togglePaused();
+	}
+
+	if (this->tileMap->getEnemyType() == EnemyType::ENEMY3)
+	{
+
+	}
 }
+
+
+
 
 void EditorState::updateButtons()
 {
@@ -274,10 +310,10 @@ void EditorState::updateGui(const float& dt)
 	if (this->tileMapTextureSelector->getHidden() == true)
 	{
 	
-		this->tileSelectorGuide.setPosition(this->mousePosGrid.x * this->grifSizeF, this->mousePosGrid.y * this->grifSizeF);
+		this->tileSelectorGuide.setPosition(this->mousePosGrid.x * this->stateData->gfxSettings->gridSizeF, this->mousePosGrid.y * this->stateData->gfxSettings->gridSizeF);
 		this->tileSelectorGuide.setTexture(&this->tileMapTextureSheet);
 		this->tileSelectorGuide.setTextureRect(this->textureSelector);
-		this->tileSelectorGuide.setOutlineColor(this->color->lightGreen);
+		this->tileSelectorGuide.setOutlineColor(this->stateData->color->lightGreen);
 	}
 	else /*
 		 * If texture selector window is NOT hidden
@@ -290,14 +326,14 @@ void EditorState::updateGui(const float& dt)
 		if (!this->tileMapTextureSelector->getActive())
 		{
 			/* Update tileMap tile selector position to the grid mouse position */
-			this->tileSelectorGuide.setPosition(this->mousePosGrid.x * this->grifSizeF, this->mousePosGrid.y * this->grifSizeF);
+			this->tileSelectorGuide.setPosition(this->mousePosGrid.x * this->stateData->gfxSettings->gridSizeF, this->mousePosGrid.y * this->stateData->gfxSettings->gridSizeF);
 
 		}
 
 		/* Update texture selected */
 		this->tileSelectorGuide.setTexture(&this->tileMapTextureSheet);
 		this->tileSelectorGuide.setTextureRect(this->textureSelector);
-		this->tileSelectorGuide.setOutlineColor(this->color->darkRed);
+		this->tileSelectorGuide.setOutlineColor(this->stateData->color->darkRed);
 		this->textureSelector = this->tileMapTextureSelector->getTextureRect();
 	}
 	
@@ -308,16 +344,40 @@ void EditorState::updateMouseTileInfo()
 {
 	std::stringstream ss;
 	std::string type;
+	std::string enemyType;
+
+	if (this->tileMap->getEnemySpawner())
+	{
+		if (this->tileMap->getEnemyType() == EnemyType::ENEMY1) 
+		{ 
+			enemyType = "Enemy type 1"; 
+		}
+		if (this->tileMap->getEnemyType() == EnemyType::ENEMY2) 
+		{ 
+			enemyType = "Enemy type 2"; 
+		}
+		if (this->tileMap->getEnemyType() == 2) 
+		{
+			enemyType = "Enemy type 3"; 
+		}
+	}
+
+	if (this->tileMap->getEnemyType() == EnemyType::ENEMY3)
+	{
+		std::cout << "\n";
+	}
 
 	if (this->tileMap->getTileType() == 0) { type = "REGULAR"; }
 	if (this->tileMap->getTileType() == 1) { type = "COLLISION"; }
 	if (this->tileMap->getTileType() == 2) { type = "DEFERRED"; }
 	if (this->tileMap->getTileType() == 3) { type = "DAMAGE"; }
+	if (this->tileMap->getTileType() == 4) { type = "ANIMATION"; }
+	if (this->tileMap->getTileType() == 5) { type = "ENEMY"; }
 
 	ss << "(" << this->mousePosGrid.x << ", " << this->mousePosGrid.y << ")" << 
-		"\n" << "Overwrite: " << ((this->tileMap->getOverWrite()) ? "Enabled" : "Disabled") << 
-		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled") <<
-		"\n" << "Type: " << type;
+		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled") << " (C to toggle) " <<
+		"\n" << "Type: " << type << " (V to toggle) " ;
+	if (this->tileMap->getEnemySpawner()) { ss << "\n" << "Enemy Type: " << enemyType << " (B to toggle) "; }
 
 	this->mouseTileInfo.setString(ss.str());
 	this->mouseTileInfo.setPosition(this->mousePosWindow.x + 60.f, this->mousePosWindow.y);
@@ -347,36 +407,35 @@ void EditorState::updateView()
 	}
 }
 
-void EditorState::updatePauseMenu()
+void EditorState::updatePauseMenuAction()
 {
-	if (this->pauseMenu->getPauseAction() == PauseMenuAction::CLEAR)
-	{
-		this->tileMap->clearCurrentMap();
-	}
-	else if (this->pauseMenu->getPauseAction() == PauseMenuAction::LOAD)
-	{
-		this->tileMap->loadTileMap("Test.txt");
-	}
-	else if (this->pauseMenu->getPauseAction() == PauseMenuAction::SAVE)
+	if (this->pauseMenu->getPauseAction() == gui::PauseMenuAction::SAVE)
 	{
 		this->tileMap->saveTileMap("Test.txt");
 	}
-	else
+	if (this->pauseMenu->getPauseAction() == gui::PauseMenuAction::LOAD)
 	{
-
+		this->tileMap->loadTileMap("Test.txt");
 	}
+	if (this->pauseMenu->getPauseAction() == gui::PauseMenuAction::CLEAR)
+	{
+		this->tileMap->clearCurrentMap();
+	}
+	
 }
+
+
 
 
 void EditorState::Render(sf::RenderTarget* target)
 {
 	/* If there target is NULL set target to current window */
-	if (!target) { target = this->window; }
+	if (!target) { target = this->stateData->window; }
 
 	/* Check if paused and render pause menu if it is */
 	if (this->pauseMenu->getPaused())
 	{
-		target->setView(this->window->getDefaultView());
+		target->setView(this->stateData->window->getDefaultView());
 		this->renderTileMap(*target);
 		this->pauseMenu->Render(target);
 	}
@@ -386,7 +445,7 @@ void EditorState::Render(sf::RenderTarget* target)
 
 		this->renderTileMap(*target);
 
-		target->setView(this->window->getDefaultView());
+		target->setView(this->stateData->window->getDefaultView());
 
 		this->renderGui(*target);
 		this->renderButtons(*target); //Empty, see note on updateButtons() above ^^
@@ -412,7 +471,7 @@ void EditorState::renderGui(sf::RenderTarget& target)
 {
 
 	/* Renders the texture selector to window */
-	target.setView(this->window->getDefaultView());
+	target.setView(this->stateData->window->getDefaultView());
 	this->tileMapTextureSelector->Render(target);
 	
 
@@ -430,7 +489,7 @@ void EditorState::renderGui(sf::RenderTarget& target)
 		}
 		
 		/* Renders user error message text */ //TODO:Add some kind of message display timer
-		target.setView(this->window->getDefaultView());
+		target.setView(this->stateData->window->getDefaultView());
 		target.draw(this->text);
 
 	}

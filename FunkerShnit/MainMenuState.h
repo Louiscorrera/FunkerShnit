@@ -37,7 +37,7 @@ protected:
 
 public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
-	MainMenuState(sf::RenderWindow* window, std::map<std::string, int>* supportedKeys, std::stack<State*>* states, float grid_size_f);
+	MainMenuState(StateData* state_data);
 	virtual ~MainMenuState();
 
 	/**** ACCESSORS ****/

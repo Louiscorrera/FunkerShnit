@@ -13,14 +13,17 @@ void Sword::initTexture()
 void Sword::initVars()
 {
 	this->isEquipped = false;
+	this->combat = false;
 	this->isAttacking = false;
+	
 
 	this->swordAttack = SwordAttack::DEFAULT;
-	this->swingVelocity.x = 30.f;
-	this->swingVelocity.y = 30.f;
+	this->swingVelocity.x = 5.f;
+	this->swingVelocity.y = 5.f;
 
 	this->attackTimer = 0.f;
 	this->attackTimerReset = 50.f;
+	this->attackTime = 0.f;
 
 	this->mousePosWindow.x = 0;
 	this->mousePosWindow.y = 0;
@@ -29,18 +32,18 @@ void Sword::initVars()
 Sword::Sword(std::string item_name, unsigned int item_level, unsigned int item_value, unsigned int item_weight, 
 	bool item_wieldable, bool item_consumable, 
 	sf::Texture& item_texture)
-	:Weapon(item_name, item_level, item_value, item_weight, item_wieldable, item_consumable, item_texture), swordHitboxComponent(NULL) 
+	:Weapon(item_name, item_level, item_value, item_weight, item_wieldable, item_consumable, item_texture)
 {
 	this->initTexture();
 	this->initVars();
 
-	/* Set Entity and Sword Range Bounds */
+	/* Set Sword Idle Range  */
 	this->swordBounds = sf::FloatRect(this->entityBounds.left, this->entityBounds.top, this->entityBounds.width * 2, this->entityBounds.height * 2);
 }
 
 Sword::~Sword() 
 {
-	delete this->swordHitboxComponent;
+	
 }
 
 const bool& Sword::getSwordEquipped() const
@@ -50,7 +53,7 @@ const bool& Sword::getSwordEquipped() const
 
 const bool& Sword::getSwordState() const
 {
-	return this->isAttacking;
+	return this->combat;
 }
 
 const bool& Sword::getAttackTimer()
@@ -63,6 +66,8 @@ const bool& Sword::getAttackTimer()
 	return false;
 }
 
+
+
 void Sword::toggleEquip()
 {
 	/* Used outside sword to toggle if a sword object is equipped or not */
@@ -74,7 +79,7 @@ void Sword::toggleEquip()
 
 void Sword::toggleAttacking()
 {
-	this->isAttacking = !this->isAttacking;
+	this->combat = !this->combat;
 }
 
 void Sword::Update(const float& dt, const sf::Vector2i mouse_pos_window)
@@ -102,41 +107,7 @@ void Sword::updateMousePos(sf::Vector2i mouse_pos_window)
 
 
 
-void Sword::updateSwordAttack(int sword_attack)
-{
-	this->swordAttack = sword_attack;
 
-	if (this->isAttacking)
-	{
-		switch (this->swordAttack)
-		{
-		case SwordAttack::DEFAULT:
-			this->swingVelocity.x = 40.f;
-			this->swingVelocity.y = 40.f;
-
-			break;
-		case SwordAttack::STAB:
-			this->swingVelocity.x = 50.f;
-			this->swingVelocity.y = 50.f;
-
-			break;
-		case SwordAttack::SLASH:
-			this->swingVelocity.x = 40.f;
-			this->swingVelocity.y = 40.f;
-
-			break;
-		case SwordAttack::CRUSH:
-			this->swingVelocity.x = 20.f;
-			this->swingVelocity.y = 20.f;
-
-			break;
-		default:
-			throw "ERROR::SWORD::UpdateSwordState(int) invalid sword state enum";
-			break;
-		}
-	}
-	/* Based off what num is passed in update the sword to that state*/
-}
 
 void Sword::updateAttackTimer(const float& dt)
 {
@@ -148,7 +119,6 @@ void Sword::updateAttackTimer(const float& dt)
 
 void Sword::updateSwordRanges(sf::FloatRect playerBounds)
 {
-	
 	this->entityBounds = playerBounds;
 	this->swordBounds = sf::FloatRect(this->entityBounds.left - 50, this->entityBounds.top - 50, this->entityBounds.width * 4, this->entityBounds.height * 3);
 }
@@ -165,30 +135,17 @@ void Sword::animateSword(sf::FloatRect playerBounds)
 	if (this->isEquipped) //If the sword is equipped
 	{
 		
-		if (this->isAttacking) //If the sword is attacking check which attack state the sword is in and animate accordingly
+		if (this->combat) //If the sword is attacking check which attack state the sword is in and animate accordingly
 		{
-			switch (this->swordAttack)
+			if (this->isAttacking)
 			{
-			case SwordAttack::DEFAULT:
-				this->rotateSword(playerBounds);
-
-				break;
-			case SwordAttack::STAB:
-
-
-				break;
-			case SwordAttack::SLASH:
-
-
-				break;
-			case SwordAttack::CRUSH:
-
-
-				break;
-			default:
-				throw "ERROR::SWORD::UpdateSwordState(int) invalid sword state enum";
-				break;
+				this->attack();
 			}
+			else
+			{
+				this->rotateSword(playerBounds);
+			}
+			
 		}
 		else //If the sword is equipped but not attacking play idle state animation i.e floating
 		{
@@ -261,30 +218,58 @@ void Sword::floatSword()
 	/* Left and Right bounds check */
 	if (this->item.getGlobalBounds().left < this->swordBounds.left) /* Left */
 	{
-		this->swingVelocity.x = 1.f;
+		this->swingVelocity.x = 0.8f;
 	}
 	else if (this->item.getGlobalBounds().left + this->item.getGlobalBounds().width > this->swordBounds.left + this->swordBounds.width) /* Right */
 	{
-		this->swingVelocity.x = -1.f;
+		this->swingVelocity.x = -0.8f;
 	}
 
 	if (this->item.getGlobalBounds().top < this->swordBounds.top)
 	{
-		this->swingVelocity.y = 1.f;
+		this->swingVelocity.y = 0.8f;
 	}
 	else if (this->item.getGlobalBounds().top + this->item.getGlobalBounds().height > this->swordBounds.top + this->swordBounds.height)
 	{
-		this->swingVelocity.y = -1.f;
+		this->swingVelocity.y = -0.8f;
 	}
 
 	/* Move */
 	this->item.setPosition(this->item.getPosition().x + this->swingVelocity.x, this->item.getPosition().y + this->swingVelocity.y);
 }
 
+void Sword::attack()
+{
+	this->attackY = this->mousePosWindow.y - this->item.getPosition().y;
+	this->attackX = this->mousePosWindow.x - this->item.getPosition().x;
+
+	float mag = std::sqrt(pow(this->attackX, 2) + pow(this->attackY, 2));
+	sf::Vector2f normal_vec(this->attackX / mag, this->attackY / mag);
+
+	if (this->isAttacking && this->combat)
+	{
+		this->item.setPosition(this->item.getPosition().x + normal_vec.x * 5, this->item.getPosition().y + normal_vec.y * 5);
+		if (this->attackTime > 15)
+		{
+			this->isAttacking = false;
+			this->attackTime = 0.f;
+		}
+		else
+		{
+			this->attackTime++;
+		}
+	}
+
+
+}
+
+
+
 void Sword::resetSword()
 {
 	
 }
+
 
 void Sword::Render(sf::RenderTarget& target)
 {

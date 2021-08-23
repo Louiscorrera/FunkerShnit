@@ -15,6 +15,7 @@ Entity::~Entity()
 {
 	delete this->animationComponent;
 	delete this->movementComponent;
+	delete this->hitboxComponent;
 }
 
 const sf::Vector2f& Entity::getPosition() const
@@ -105,6 +106,14 @@ void Entity::setPosition(const float x, const float y)
 	}
 	else
 		this->entity.setPosition(x, y);
+}
+
+void Entity::Update(const float& dt)
+{
+}
+
+void Entity::Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style)
+{
 }
 
 void Entity::updateVelocity(const float& dir_x, const float& dir_y, const float& dt)
