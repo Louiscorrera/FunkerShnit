@@ -44,6 +44,11 @@ void GameState::initPlayer()
 	this->player = new Player(0, 0, this->playerGraphic);
 }
 
+void GameState::initEnemies()
+{
+	this->activeEnemies.reserve(1);
+}
+
 void GameState::initPauseMenu()
 {
 	//this->pauseMenu = new PauseState(this->stateData);
@@ -102,6 +107,7 @@ GameState::GameState(StateData* state_data)
 {
 	this->initKeybinds();
 	this->initTileMap();
+	this->initEnemies();
 	this->initPauseMenu();
 	this->initView();
 	this->initPlayer();
@@ -137,6 +143,8 @@ void GameState::Update(const float& dt)
 	* Updates hitbox position, relative to player sprite */
 	this->player->Update(dt, static_cast<sf::Vector2i>(this->mousePosView), this->swordAction);
 
+	this->updateEnemies(dt);
+
 	this->updateView(dt);
 }
 
@@ -157,6 +165,16 @@ void GameState::updatePlayerInput(const float& dt)
 void GameState::updateTileMap(const float& dt)
 {
 	
+}
+
+void GameState::updateEnemies(const float& dt)
+{
+	this->tileMap->checkEnemySpawners(dt, &this->activeEnemies, this->player);
+
+	for (int i = 0; i < this->activeEnemies.size(); i++)
+	{
+		this->activeEnemies[i]->Update(dt);
+	}
 }
 
 void GameState::updateView(const float& dt)
@@ -244,6 +262,7 @@ void GameState::Render(sf::RenderTarget* target)
 	this->renderTileMap(*target);
 	this->renderPlayer(*target);
 	this->tileMap->deferredRender(*target);
+	this->renderEnemies(*target);
 	
 }
 
@@ -255,4 +274,12 @@ void GameState::renderPlayer(sf::RenderTarget& target)
 void GameState::renderTileMap(sf::RenderTarget& target)
 {
 	this->tileMap->Render(target, &this->player->getEntitySprite());
+}
+
+void GameState::renderEnemies(sf::RenderTarget& target)
+{
+	for (int i = 0; i < this->activeEnemies.size(); i++)
+	{
+		this->activeEnemies[i]->Render(target);
+	}
 }

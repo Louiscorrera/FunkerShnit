@@ -6,7 +6,7 @@ Enemy::Enemy(EnemySpawner* spawner)
 	:spawner(spawner)
 {
 	this->enemyMoveCycle = 0.f; //start cycle at 0
-	this->enemyVelocity = sf::Vector2f(0.f, 0.f);
+	this->enemyVelocity = sf::Vector2f(2.f, 2.f);
 }
 
 Enemy::~Enemy()
@@ -16,22 +16,47 @@ Enemy::~Enemy()
 
 void Enemy::Update(const float& dt)
 {
-	this->updateEnemyPos(dt);
-	this->checkDistanceFromSpawner();
+	
 }
 
 void Enemy::updateEnemyPos(const float& dt)
 {
 	/* if there have been 15 game loop cycles, change enemy velocity and reset counter */
-	if (this->enemyMoveCycle >= 15)
+	if (this->enemyMoveCycle >= 350)
 	{
-		this->enemyVelocity.x = rand() % 10 + 1;
-		this->enemyVelocity.y = rand() % 10 + 1;
+		int negativeY = rand() % 3;
+		int negativeX = rand() % 2;
+		if (negativeY == 0) 
+		{
+			this->enemyVelocity.y = -(rand() % 10 + 1);
+		}
+		else if(negativeY == 1)
+		{
+			this->enemyVelocity.y = rand() % 10 + 1;
+		}
+		else
+		{
+			this->enemyVelocity.y = 0.f;
+		}
+		if (negativeX == 0)
+		{
+			this->enemyVelocity.x = -(rand() % 10 + 1);
+		}
+		else if (negativeX == 1)
+		{
+			this->enemyVelocity.x = rand() % 10 + 1;
+		}
+		else
+		{
+			this->enemyVelocity.x = 0.f;
+		}
+		
 		this->enemyMoveCycle = 0;
 	}
 	else /* if within x amount of game loop cycles move the enemy by its current velocity */
 	{
 		this->updateVelocity(this->enemyVelocity.x, this->enemyVelocity.y, dt);
+		this->movementComponent->Update(dt);
 		this->enemyMoveCycle++;
 	}
 }

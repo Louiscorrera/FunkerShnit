@@ -26,6 +26,7 @@ public:
 	/**** METHODS ****/
 
 	/*** Updates ***/
+	void Update(const float& dt) override;
 
 	void updateAnimation(const float& dt);
 	

@@ -19,6 +19,9 @@ private:
 	Player* player;
 	sf::Texture playerGraphic;
 
+	/* Enemies */
+	std::vector<Enemy*> activeEnemies;
+
 	/* Tile Map */
 	TileMap* tileMap;
 	sf::Texture tileMapTextureSheet;
@@ -43,6 +46,7 @@ private:
 	/** (Non_Pure Virtuals) **/
 	void initDeferredRender();
 	void initPlayer();
+	void initEnemies();
 	void initPauseMenu();
 	void initTileMap();
 	void initView();
@@ -66,6 +70,7 @@ public:
 	void Update(const float& dt) override;
 	void updatePlayerInput(const float& dt);
 	void updateTileMap(const float& dt);
+	void updateEnemies(const float& dt);
 	void updateView(const float& dt);
 	void updatePlayerMovement(const float& dt);
 	void updatePlayerWeapon();
@@ -74,6 +79,7 @@ public:
 	void Render(sf::RenderTarget* target = NULL);
 	void renderPlayer(sf::RenderTarget& target);
 	void renderTileMap(sf::RenderTarget& target);
+	void renderEnemies(sf::RenderTarget& target);
 };
 
 

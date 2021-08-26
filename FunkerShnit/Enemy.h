@@ -32,7 +32,7 @@ public:
 	/**** METHODS ****/
 
 	/*** Updates ***/
-	virtual void Update(const float& dt) override; //doesnt do anything
+	virtual void Update(const float& dt); //doesnt do anything
 	virtual void updateEnemyPos(const float& dt);
 	void checkDistanceFromSpawner();
 	

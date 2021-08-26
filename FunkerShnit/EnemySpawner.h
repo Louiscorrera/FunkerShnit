@@ -40,6 +40,7 @@ public:
 	const bool& getEnemySpawnTimer();
 	const bool& getSpawnerDone();
 	const bool& getSpawnerActive();
+	bool getIsFull();
 	const sf::Vector2f& getSpawnerLocation();
 	const float& getSpawnerMaxDistance();
 

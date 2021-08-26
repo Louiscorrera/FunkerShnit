@@ -5,7 +5,7 @@
 
 void EnemySpawner::initVars()
 {
-	this->maxEnemyDistance = 500.f;
+	this->maxEnemyDistance = 100.f;
 
 	this->spawnerDone = false;
 	this->spawnerActive = false;
@@ -47,6 +47,18 @@ const bool& EnemySpawner::getSpawnerActive()
 	return this->spawnerActive;
 }
 
+bool EnemySpawner::getIsFull()
+{
+	if (this->enemyAmount >= this->maxEnemyAmount)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 const sf::Vector2f& EnemySpawner::getSpawnerLocation()
 {
 	return this->spawnerPosition;
@@ -85,19 +97,20 @@ void EnemySpawner::updateTimer(const float& dt)
 /* This is a call for a resource from tilemap, meant to be called from gamestate */
 Enemy* EnemySpawner::spawnEnemy()
 {
+	
 	if (this->enemyAmount >= this->maxEnemyAmount) //If the max amount of enemies have been spawned switch spawner done to true
 	{
 		this->spawnerDone = true;
 	}
-
+	
 	if (this->spawnerDone) //Check if spawner has max amount of enemies
 	{
 		return NULL;
 	}
 	else //Spawn 
 	{
-		this->enemyAmount++;
-		return this->spawnEnemy();
+		
+		return this->chooseEnemyType();
 	}
 
 }
@@ -106,6 +119,7 @@ Enemy* EnemySpawner::chooseEnemyType()
 {
 	if (this->enemyType == 0) //First enemy type
 	{
+		this->enemyAmount++;
 		return new VampireEnemy(this, *this->texture);
 	}
 	else if (this->enemyType == 1) //Second enemy type

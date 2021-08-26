@@ -9,19 +9,19 @@ void TileMap::initTextures()
 		std::cout << "ERROR:InitTextures()::TILEMAP Could not load tile texture sheet from file\n";
 	}
 
-	this->textureFileNames[EnemyType::ENEMY1] = ""; //Add these in!!!
+	this->textureFileNames[EnemyType::ENEMY1] = "Resources/Images/Sprites/Enemy/ArmyEnemy.png"; //Add these in!!!
 
 	this->textureFileNames[EnemyType::ENEMY2] = "";
 
 	this->textureFileNames[EnemyType::ENEMY3] = "";
 
-	for (int i = EnemyType::ENEMY1; i < EnemyType::ENEMY3; i++)
-	{
-		if (this->enemyTextures[i].loadFromFile(this->textureFileNames[i]))
+	//for (int i = EnemyType::ENEMY1; i < EnemyType::ENEMY3; i++)
+	//{
+		if (!this->enemyTextures[EnemyType::ENEMY1].loadFromFile(this->textureFileNames[EnemyType::ENEMY1]))
 		{
-			throw "ERROR::InitTextures()::TILEMAP could not load one or more of the enemytextures ";
+			std::cout << "ERROR::InitTextures()::TILEMAP could not load one or more of the enemytextures\n";
 		}
-	}
+	//}
 
 }
 
@@ -330,19 +330,23 @@ bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, cons
 		/* Check if enemy spawner is enabled */
 		if (this->enemySpawnerEnabled)
 		{
+			
 			switch (this->enemyType)
 			{
 			case EnemyType::ENEMY1:
 				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type, 
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY1]));
+				std::cout << "Added Enemy Spawner!!!\n";
 				break;
 			case EnemyType::ENEMY2:
 				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY2]));
+				std::cout << "Added Enemy Spawner!!!\n";
 				break;
 			case EnemyType::ENEMY3:
 				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY3]));
+				std::cout << "Added Enemy Spawner3!!!\n";
 				break;
 			default:
 				break;
@@ -515,7 +519,7 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 	}
 }
 
-void TileMap::checkEnemySpawners(const float& dt, std::vector<Entity*>* game_enemies, Entity* entity)
+void TileMap::checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enemies, Entity* entity)
 {
 
 	/* Local vars to store distance from entity to render */
@@ -548,26 +552,28 @@ void TileMap::checkEnemySpawners(const float& dt, std::vector<Entity*>* game_ene
 				{
 					if (this->tileMap[x][y][layer][k]->enemySpawner) /* IF the tile has a valid enemy spawner */
 					{
-						/* Update spawner */
-						this->tileMap[x][y][layer][k]->enemySpawner->Update(dt); /* Update the spawner */
-
 						/* Attempt to spawn */ 
 						/* If spawnenemy returns NULL */
-						if (!this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy()) 
+						//Do Nothing
+						if (this->tileMap[x][y][layer][k]->enemySpawner->getIsFull())
 						{
-							//Do Nothing
+
 						}
 						else
 						{
 							/* If the spawner is not active, activate spawner */
-							if (!this->tileMap[x][y][layer][k]->enemySpawner->getSpawnerActive()) 
+							if (!this->tileMap[x][y][layer][k]->enemySpawner->getSpawnerActive())
 							{
 								this->tileMap[x][y][layer][k]->enemySpawner->toggleSpawnerActive();
 							}
 
 							/* Add new enemy back to gamestate's enemy array */
 							game_enemies->push_back(this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy());
+
 						}
+						/* Update spawner */
+						this->tileMap[x][y][layer][k]->enemySpawner->Update(dt); /* Update the spawner */
+
 					}else{}
 				}else{}
 			}

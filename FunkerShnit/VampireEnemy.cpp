@@ -4,14 +4,14 @@
 void VampireEnemy::initComponents()
 {
 	this->createHitBoxComponent(this->entity, 50, 50.f, 60, 60.f); //Update these to be more accurate
-	this->createMovementComponent(100, 1000, 700);
+	this->createMovementComponent(20, 300, 200);
 	this->createAnimationComponent(*this->texture);
 
 	/* animations */
-	this->animationComponent->addAnimation("Left", 10.f, 0, 0, 12, 0, 100, 100); //Update these to be more accurate
-	this->animationComponent->addAnimation("Right", 10.f, 0, 0, 12, 0, 100, 100);
-	this->animationComponent->addAnimation("Up", 10.f, 0, 0, 12, 0, 100, 100);
-	this->animationComponent->addAnimation("Down", 10.f, 0, 0, 12, 0, 100, 100);
+	this->animationComponent->addAnimation("WALK_LEFT", 10.f, 0, 1, 8, 1, 64, 64); //Update these to be more accurate
+	this->animationComponent->addAnimation("WALK_RIGHT", 10.f, 0, 3, 8, 3, 64, 64);
+	this->animationComponent->addAnimation("WALK_UP", 10.f, 0, 0, 8, 0, 64, 64);
+	this->animationComponent->addAnimation("WALK_DOWN", 10.f, 0, 2, 8, 2, 64, 64);
 }
 
 VampireEnemy::VampireEnemy(EnemySpawner* spawner, sf::Texture& vampire_sprite_sheet)
@@ -25,6 +25,13 @@ VampireEnemy::~VampireEnemy()
 {
 }
 
+
+void VampireEnemy::Update(const float& dt)
+{
+	this->updateAnimation(dt);
+	this->updateEnemyPos(dt);
+	this->checkDistanceFromSpawner();
+}
 
 void VampireEnemy::updateAnimation(const float& dt)
 {

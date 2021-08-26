@@ -88,7 +88,7 @@ public:
 	void clearCurrentMap();
 
 	void checkTileCollision(const float& dt, Entity* entity = NULL);
-	void checkEnemySpawners(const float& dt, std::vector<Entity*>* game_enemies, Entity* entity);
+	void checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enemies, Entity* entity);
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL);

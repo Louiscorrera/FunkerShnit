@@ -362,10 +362,6 @@ void EditorState::updateMouseTileInfo()
 		}
 	}
 
-	if (this->tileMap->getEnemyType() == EnemyType::ENEMY3)
-	{
-		std::cout << "\n";
-	}
 
 	if (this->tileMap->getTileType() == 0) { type = "REGULAR"; }
 	if (this->tileMap->getTileType() == 1) { type = "COLLISION"; }
