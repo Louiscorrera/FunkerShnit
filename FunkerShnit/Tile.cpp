@@ -8,7 +8,7 @@ void Tile::initEnemySpawner(int enemyType, sf::Texture* enemyTexture)
 	switch (enemyType)
 	{
 	case EnemyType::ENEMY1:
-		this->enemySpawner = new EnemySpawner(*enemyTexture, sf::Vector2f(this->gridPosX * this->tileWidth, this->gridPosY * this->tileHeight), EnemyType::ENEMY1, 10, 0, 1); //Vampire 
+		this->enemySpawner = new EnemySpawner(*enemyTexture, sf::Vector2f(this->gridPosX * this->tileWidth, this->gridPosY * this->tileHeight), EnemyType::ENEMY1, 10, 0, 2); //Vampire 
 		break;
 	case EnemyType::ENEMY2:
 		this->enemySpawner = new EnemySpawner(*enemyTexture, sf::Vector2f(this->gridPosX * this->tileWidth, this->gridPosY * this->tileHeight), EnemyType::ENEMY2, 10, 0, 1); //Mummy

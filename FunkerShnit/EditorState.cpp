@@ -48,7 +48,7 @@ void EditorState::initText()
 
 void EditorState::initTileMap()
 {
-	this->tileMap = new TileMap(50.f, 50.f, 1.f, this->stateData->gfxSettings->gridSizeF);
+	this->tileMap = new TileMap(25.f, 25.f, 1.f, this->stateData->gfxSettings->gridSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
@@ -81,7 +81,7 @@ void EditorState::initGui()
 	this->initButtons();
 
 	/* Inits tile map texure selector interface */
-	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 450.f, 500.f, this->stateData->gfxSettings->gridSizeF, &this->tileMapTextureSheet, this->stateData->font, this->stateData->color);
+	this->tileMapTextureSelector = new gui::EditorTextureSelector(20.f, 50.f, 650.f, 500.f, this->stateData->gfxSettings->gridSizeF, &this->tileMapTextureSheet, this->stateData->font, this->stateData->color);
 }
 
 void EditorState::initView()
@@ -144,7 +144,7 @@ void EditorState::Update(const float& dt)
 		if (this->pauseMenu->getPaused() == true)
 		{
 			this->updateMousePos();
-			this->mainMusic.pause(); //Pause music
+			//this->mainMusic.pause(); //Pause music
 			this->pauseMenu->Update(dt, this->mousePosView);
 			this->updatePauseMenuAction();
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("PAUSE"))) && this->getKeyTime())
@@ -159,9 +159,9 @@ void EditorState::Update(const float& dt)
 			if (this->mainMusic.getStatus() != sf::Music::Playing)
 			{
 				/* Set music on loop */
-				this->mainMusic.setVolume(40.f);
-				this->mainMusic.setLoop(true);
-				this->mainMusic.play();
+				//this->mainMusic.setVolume(40.f);
+				//this->mainMusic.setLoop(true);
+				//this->mainMusic.play();
 			}
 
 			

@@ -3,7 +3,7 @@
 
 void VampireEnemy::initComponents()
 {
-	this->createHitBoxComponent(this->entity, 50, 50.f, 60, 60.f); //Update these to be more accurate
+	this->createHitBoxComponent(this->entity, 0.f, 0.f, 32.f, 45.f);
 	this->createMovementComponent(20, 300, 200);
 	this->createAnimationComponent(*this->texture);
 
@@ -19,18 +19,31 @@ VampireEnemy::VampireEnemy(EnemySpawner* spawner, sf::Texture& vampire_sprite_sh
 {
 	this->isAlive = true;
 	this->initComponents();
+	this->health = 5;
 }
 
 VampireEnemy::~VampireEnemy()
 {
 }
 
+const sf::FloatRect VampireEnemy::getEntityGlobalBounds()
+{
+	if (this->hitboxComponent)
+	{
+		return this->hitboxComponent->getHitboxGlobalBounds();
+	}
+
+	return this->entity.getGlobalBounds();
+}
+
 
 void VampireEnemy::Update(const float& dt)
 {
+	this->hitboxComponent->update();
 	this->updateAnimation(dt);
 	this->updateEnemyPos(dt);
 	this->checkDistanceFromSpawner();
+	
 }
 
 void VampireEnemy::updateAnimation(const float& dt)
@@ -56,4 +69,10 @@ void VampireEnemy::updateAnimation(const float& dt)
 		this->animationComponent->play("WALK_DOWN", dt, this->movementComponent->getVelocity().x,
 			this->movementComponent->getMaxVelocity());
 	}
+}
+
+void VampireEnemy::Render(sf::RenderTarget& target)
+{
+	target.draw(this->entity);
+	this->hitboxComponent->render(target);
 }

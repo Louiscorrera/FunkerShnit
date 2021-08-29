@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClCompile Include="AnimationComponent.cpp" />
     <ClCompile Include="Card.cpp" />
+    <ClCompile Include="CombatSystem.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SkillComponent.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="StateData.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -174,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationComponent.h" />
     <ClInclude Include="Card.h" />
+    <ClInclude Include="CombatSystem.h" />
     <ClInclude Include="EditorState.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemySpawner.h" />
@@ -186,6 +189,7 @@
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SkillComponent.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateData.h" />
     <ClInclude Include="stdafx.h" />

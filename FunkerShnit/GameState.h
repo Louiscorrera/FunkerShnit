@@ -18,6 +18,7 @@ private:
 	/* Player */
 	Player* player;
 	sf::Texture playerGraphic;
+	SkillComponent* currPlayerSkill;
 
 	/* Enemies */
 	std::vector<Enemy*> activeEnemies;
@@ -30,6 +31,9 @@ private:
 
 	/* Sword Action */
 	int swordAction;
+
+	/* Combat */
+	CombatSystem combatSystem;
 	
 
 	/* View */
@@ -74,6 +78,7 @@ public:
 	void updateView(const float& dt);
 	void updatePlayerMovement(const float& dt);
 	void updatePlayerWeapon();
+	void updateCombat(Player* player, Entity* Enemy1, Entity* Enemy2);
 
 	/*** Renders ***/
 	void Render(sf::RenderTarget* target = NULL);

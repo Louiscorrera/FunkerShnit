@@ -91,7 +91,7 @@ public:
 	void checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enemies, Entity* entity);
 
 	/*** Renders ***/
-	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL);
+	void Render(sf::RenderTarget& target, const sf::Sprite* entity = NULL, sf::View* mainView = NULL);
 	void deferredRender(sf::RenderTarget& target);
 };
 

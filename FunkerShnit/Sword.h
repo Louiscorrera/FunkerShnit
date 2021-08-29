@@ -2,7 +2,7 @@
 
 
 #include "Weapon.h"
-
+#include "HitboxComponent.h"
 
 enum SwordAttack{ DEFAULT = 0, STAB, CRUSH, SLASH, GYRATE };
 
@@ -17,7 +17,7 @@ private:
 	sf::FloatRect textureRect;
 
 	/* Sword Hitbox */
-	
+	HitboxComponent* swordHitboxComponent;
 
 	/* Sword State */
 	int swordAttack;
@@ -44,6 +44,7 @@ private:
 	/**** METHODS(Private) ****/
 	void initTexture();
 	void initVars();
+	void initHitboxComponent();
 
 protected:
 
@@ -61,6 +62,8 @@ public:
 	const bool& getSwordState() const;
 	const bool& getAttackTimer();
 
+	const sf::FloatRect getSwordHitBox() const;
+
 
 	void toggleEquip();
 	void toggleAttacking();
@@ -72,6 +75,7 @@ public:
 	void updateMousePos(sf::Vector2i mouse_pos_window);
 	void updateAttackTimer(const float& dt);
 	void updateSwordRanges(sf::FloatRect playerBounds);
+	void updateHitbox(float rotation = -1);
 
 	void animateSword(sf::FloatRect playerBounds);
 	void rotateSword(sf::FloatRect playerBounds);

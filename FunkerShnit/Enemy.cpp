@@ -78,7 +78,7 @@ void Enemy::checkDistanceFromSpawner()
 
 void Enemy::despawn()
 {
-	
+	this->spawner->enemyAmount--;
 }
 
 void Enemy::despawn(Entity* player)

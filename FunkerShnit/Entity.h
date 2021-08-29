@@ -3,7 +3,8 @@
 
 #include "MovementComponent.h"
 #include "AnimationComponent.h"
-#include "HitboxComponent.h"
+
+#include "SkillComponent.h"
 #include "Sword.h"
 
 class Entity
@@ -21,12 +22,14 @@ protected:
 	sf::Sprite entity;
 
 	/* Trackers */
+	int health;
 	bool isAlive;
 
 	/* Movement */
 	MovementComponent* movementComponent;
 	AnimationComponent* animationComponent;
 	HitboxComponent* hitboxComponent;
+	std::vector<SkillComponent*> skillComponents;
 
 	
 public:
@@ -37,8 +40,9 @@ public:
 	/**** ACCESSORS ****/
 	const sf::Vector2f& getPosition() const;
 	const sf::Sprite& getEntitySprite();
-	const sf::FloatRect getEntityGlobalBounds();
+	virtual const sf::FloatRect getEntityGlobalBounds();
 	const sf::FloatRect getEntityNextBounds(const float& dt);
+	const bool& getIsAlive() const;
 
 	const int& getHitboxOffsetY() const;
 	const int& getHitboxOffsetX() const;
@@ -51,10 +55,15 @@ public:
 	void createMovementComponent(const float maxVelocity, const float acceleration, const float deceleration);
 	void createAnimationComponent(sf::Texture& textureSheet);
 	void createHitBoxComponent(sf::Sprite& sprite, float offset_x, float offset_y, float width, float height);
+	void createSkillComponent(int number_of_skills = 0);
 	
 	void stopVelocity();
 	void stopVelocityX();
 	void stopVelocityY();
+
+
+	/** Combat **/
+	void takeDamage(int damage);
 
 	/*** Updates ***/
 	/** Pure Virtuals **/

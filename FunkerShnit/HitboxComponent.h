@@ -18,7 +18,7 @@ public:
 	float OffsetGridX;
 	float offsetGridY;
 
-	HitboxComponent(sf::Sprite& sprite, float offset_x, float offset_y, float width, float height);
+	HitboxComponent(sf::Sprite& sprite, float offset_x, float offset_y, float width, float height, bool special = false);
 	virtual ~HitboxComponent();
 
 	//Functions
@@ -29,6 +29,7 @@ public:
 
 	void update();
 	void setPosition(const sf::Vector2f& position);
+	void setRotation(float rotation);
 
 	void render(sf::RenderTarget& target);
 };

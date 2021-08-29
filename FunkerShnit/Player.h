@@ -22,6 +22,9 @@ private:
 	/* View */
 	sf::RenderWindow* currWindow;
 
+	/* Skills */
+	
+
 	/**** METHODS(Private) ****/
 	void initSounds();
 	void initSword();
@@ -30,17 +33,21 @@ protected:
 
 public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
-	Player(float x, float y, sf::Texture& texture);
+	Player(float x, float y, sf::Texture& texture, int health = 10);
 	virtual ~Player();
 
 
 	/**** ACCESSORS ****/
 	const int& getMovementState() const;
+	const sf::FloatRect getSwordPosition() const;
+	SkillComponent* getSkills(int skill_to_get);
 	
 
 	void toggleSwordEquip();
 	void toggleAttacking();
 	void attackStab();
+	const bool getAttacking() const;
+	
 
 	/**** METHODS ****/
 	

@@ -25,8 +25,10 @@ void Player::initSword()
 	
 }
 
-Player::Player(float x, float y, sf::Texture& texture)
+Player::Player(float x, float y, sf::Texture& texture, int health)
 {
+	this->health = health;
+
 	this->initSounds();
 	this->setTexture(texture);
 	this->setPosition(x, y);
@@ -34,6 +36,7 @@ Player::Player(float x, float y, sf::Texture& texture)
 	this->createMovementComponent(200.f, 1100.f, 750.f);
 	this->createAnimationComponent(texture);
 	this->createHitBoxComponent(this->entity, 0.f, 0.f, 32.f, 45.f);
+	this->createSkillComponent();
 
 	this->initSword();
 
@@ -74,6 +77,16 @@ const int& Player::getMovementState() const
 	}
 }
 
+const sf::FloatRect Player::getSwordPosition() const
+{
+	return sf::FloatRect(this->sword->getSwordHitBox());
+}
+
+SkillComponent* Player::getSkills(int skill_to_get)
+{
+	return this->skillComponents[skill_to_get];
+}
+
 
 
 void Player::toggleSwordEquip()
@@ -90,6 +103,18 @@ void Player::attackStab()
 {
 	this->sword->isAttacking = true;
 	
+}
+
+const bool Player::getAttacking() const
+{
+	if (this->sword->isAttacking)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 

@@ -2,7 +2,7 @@
 #define ENEMYSPAWNER_H
 
 class Enemy;
-class VampireEnemy;
+
 
 #include "VampireEnemy.h"
 
@@ -13,7 +13,6 @@ private:
 	/**** DATA MEMBERS ****/
 	int enemyType;
 	int enemyLevel;
-	int enemyAmount;
 	int maxEnemyAmount;
 	float maxEnemyDistance;
 
@@ -32,12 +31,14 @@ private:
 protected:
 
 public:
+	int enemyAmount;
+
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
 	EnemySpawner(sf::Texture& enemy_texture, sf::Vector2f tile_pos, int enemy_type, int enemy_level, int enemy_amount, int max_enemy_amount);
 	virtual ~EnemySpawner();
 
 	/**** ACCESSORS ****/
-	const bool& getEnemySpawnTimer();
+	const bool getEnemySpawnTimer();
 	const bool& getSpawnerDone();
 	const bool& getSpawnerActive();
 	bool getIsFull();

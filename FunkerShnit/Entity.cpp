@@ -1,9 +1,10 @@
-#include "stdafx.h"
+ #include "stdafx.h"
 #include "Entity.h"
 
 void Entity::initVars()
 {
 	this->movementComponent = NULL;
+	this->health = 0.f;
 }
 
 Entity::Entity()
@@ -16,6 +17,11 @@ Entity::~Entity()
 	delete this->animationComponent;
 	delete this->movementComponent;
 	delete this->hitboxComponent;
+	for (int i = 0; i < this->skillComponents.size(); i++)
+	{
+		delete this->skillComponents[i];
+	}
+	
 }
 
 const sf::Vector2f& Entity::getPosition() const
@@ -50,6 +56,11 @@ const sf::FloatRect Entity::getEntityNextBounds(const float& dt)
 	}
 }
 
+const bool& Entity::getIsAlive() const
+{
+	return this->isAlive;
+}
+
 const int& Entity::getHitboxOffsetY() const
 {
 	return this->hitboxComponent->offsetGridY;
@@ -81,6 +92,28 @@ void Entity::createHitBoxComponent(sf::Sprite& sprite, float offset_x, float off
 	this->hitboxComponent = new HitboxComponent(sprite, offset_x, offset_y, width, height);
 }
 
+void Entity::createSkillComponent(int number_of_skills)
+{
+	if (number_of_skills == 0)
+	{
+		this->skillComponents.push_back(new SkillComponent("Attack"));
+		this->skillComponents.push_back(new SkillComponent("Defense"));
+		this->skillComponents.push_back(new SkillComponent("Health"));
+		this->skillComponents.push_back(new SkillComponent("CombatLevel"));
+	}
+	else
+	{
+		this->skillComponents.push_back(new SkillComponent("Attack"));
+		this->skillComponents.push_back(new SkillComponent("Defense"));
+		this->skillComponents.push_back(new SkillComponent("Health"));
+	}
+
+
+		
+}
+
+
+
 void Entity::stopVelocity()
 {
 	this->movementComponent->stopVelocity();
@@ -94,6 +127,15 @@ void Entity::stopVelocityX()
 void Entity::stopVelocityY()
 {
 	this->movementComponent->stopVelocityY();
+}
+
+void Entity::takeDamage(int damage)
+{
+	this->health -= damage;
+	if (this->health <= 0)
+	{
+		this->isAlive = false;
+	}
 }
 
 

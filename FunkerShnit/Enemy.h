@@ -2,7 +2,7 @@
 #define ENEMY_H
 
 class EnemySpawner;
-#include "Player.h"
+#include "CombatSystem.h"
 
 
 
@@ -41,7 +41,7 @@ public:
 	void despawn(Entity* player); //Just depsawn the enemy, update the spawner
 
 	/*** Renders ***/
-	virtual void Render(sf::RenderTarget& target) override; //doesnt do anything
+	virtual void Render(sf::RenderTarget& target); //doesnt do anything
 
 };
 

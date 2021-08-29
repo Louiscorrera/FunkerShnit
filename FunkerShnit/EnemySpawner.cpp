@@ -5,13 +5,13 @@
 
 void EnemySpawner::initVars()
 {
-	this->maxEnemyDistance = 100.f;
+	this->maxEnemyDistance = 400.f;
 
 	this->spawnerDone = false;
 	this->spawnerActive = false;
 
 	this->spawnTimer = 0.f;
-	this->spawnTimerMax = 50.f;
+	this->spawnTimerMax = 300.f;
 }
 
 EnemySpawner::EnemySpawner(sf::Texture& enemy_texture, sf::Vector2f tile_pos, int enemy_type, int enemy_level, int enemy_amount, int max_enemy_amount)
@@ -24,7 +24,7 @@ EnemySpawner::~EnemySpawner()
 {
 }
 
-const bool& EnemySpawner::getEnemySpawnTimer()
+const bool EnemySpawner::getEnemySpawnTimer()
 {
 	if (this->spawnTimer >= this->spawnTimerMax)
 	{

@@ -22,6 +22,7 @@ public:
 	virtual ~VampireEnemy();
 
 	/**** ACCESSORS ****/
+	const sf::FloatRect getEntityGlobalBounds();
 
 	/**** METHODS ****/
 
@@ -32,7 +33,7 @@ public:
 	
 
 	/*** Renders ***/
-
+	void Render(sf::RenderTarget& target);
 
 
 };

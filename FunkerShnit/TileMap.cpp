@@ -4,7 +4,7 @@
 void TileMap::initTextures()
 {
 
-	if (!this->tileTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet2.png"))
+	if (!this->tileTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
 	{
 		std::cout << "ERROR:InitTextures()::TILEMAP Could not load tile texture sheet from file\n";
 	}
@@ -492,7 +492,7 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 								&& playerBounds.top < wallBounds.top + wallBounds.height
 								&& playerBounds.top + playerBounds.height > wallBounds.top)
 							{
-								entity->stopVelocity(); //Make this function in entity
+ 								entity->stopVelocity(); //Make this function in entity
 								entity->setPosition(wallBounds.left - wallBounds.width + entity->getHitboxOffsetX() - 0.5, playerBounds.top); //Make this function in entity
 							}
 							//Left Collision
@@ -567,11 +567,15 @@ void TileMap::checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enem
 								this->tileMap[x][y][layer][k]->enemySpawner->toggleSpawnerActive();
 							}
 
-							/* Add new enemy back to gamestate's enemy array */
-							game_enemies->push_back(this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy());
+							if (this->tileMap[x][y][layer][k]->enemySpawner->getEnemySpawnTimer())
+							{
+								/* Add new enemy back to gamestate's enemy array */
+								game_enemies->push_back(this->tileMap[x][y][layer][k]->enemySpawner->spawnEnemy());
+							}
 
 						}
 						/* Update spawner */
+						
 						this->tileMap[x][y][layer][k]->enemySpawner->Update(dt); /* Update the spawner */
 
 					}else{}
@@ -582,7 +586,7 @@ void TileMap::checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enem
 
 }
 
-void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)
+void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity, sf::View* mainView)
 {
 	/* Check if there is an entity(default = NULL), Render around that entity if it exists */
 	if (entity)
@@ -593,17 +597,17 @@ void TileMap::Render(sf::RenderTarget& target, const sf::Sprite* entity)
 
 
 		/* Set and update the the offset from the entity to render around */
-		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 5;
+		startX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) - 25;
 		if (startX < 0) { startX = 0; }
 		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
 
-		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 5;
+		endX = static_cast<int>((entity->getPosition().x) / this->gridSizeF) + 25;
 		if (endX > this->maxSizeX) { endX = this->maxSizeX; }
 
-		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 5;
+		startY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) - 25;
 		if (startY < 0) { startY = 0; }
 
-		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 5;
+		endY = static_cast<int>((entity->getPosition().y) / this->gridSizeF) + 25;
 		//if (endY < 0) { endY = 0; }
 		if (endY > this->maxSizeY) { endY = this->maxSizeY; }
 

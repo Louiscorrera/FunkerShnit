@@ -41,7 +41,7 @@ void GameState::initPlayer()
 	}
 
 	/* Init Player */
-	this->player = new Player(0, 0, this->playerGraphic);
+	this->player = new Player(0, 0, this->playerGraphic, 100);
 }
 
 void GameState::initEnemies()
@@ -56,7 +56,7 @@ void GameState::initPauseMenu()
 
 void GameState::initTileMap()
 {
-	this->tileMap = new TileMap(50.f, 50.f, 10.f, this->stateData->gfxSettings->gridSizeF);
+	this->tileMap = new TileMap(25.f, 25.f, 10.f, this->stateData->gfxSettings->gridSizeF);
 
 	/* Init tile map texture sheet */
 	if (!this->tileMapTextureSheet.loadFromFile("Resources/Images/Tiles/tilesheet1.2.png"))
@@ -119,6 +119,8 @@ GameState::GameState(StateData* state_data)
 
 	this->swordAction = SwordAttack::DEFAULT;
 
+	
+
 }
 
 GameState::~GameState()
@@ -173,7 +175,19 @@ void GameState::updateEnemies(const float& dt)
 
 	for (int i = 0; i < this->activeEnemies.size(); i++)
 	{
-		this->activeEnemies[i]->Update(dt);
+		this->combatSystem.battle(*this->player, *this->activeEnemies[i]);
+		if (!this->activeEnemies[i]->getIsAlive())
+		{
+			this->activeEnemies[i]->despawn();
+			this->activeEnemies.erase(this->activeEnemies.begin() + i);
+		}
+		else
+		{
+			this->activeEnemies[i]->Update(dt);
+			this->tileMap->checkTileCollision(dt, this->activeEnemies[i]);
+		}
+		
+		
 	}
 }
 
@@ -252,6 +266,10 @@ void GameState::updatePlayerWeapon()
 		this->player->attackStab();
 	}
 	
+}
+
+void GameState::updateCombat(Player* player, Entity* Enemy1, Entity* Enemy2)
+{
 }
 
 void GameState::Render(sf::RenderTarget* target)

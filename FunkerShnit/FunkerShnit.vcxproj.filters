@@ -108,6 +108,12 @@
     <ClCompile Include="VampireEnemy.cpp">
       <Filter>Entities\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="CombatSystem.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SkillComponent.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -175,6 +181,12 @@
     </ClInclude>
     <ClInclude Include="VampireEnemy.h">
       <Filter>Entities\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatSystem.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SkillComponent.h">
+      <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

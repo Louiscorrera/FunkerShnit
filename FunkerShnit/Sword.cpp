@@ -1,6 +1,12 @@
 #include "stdafx.h"
 #include "Sword.h"
 
+void Sword::initHitboxComponent() {
+
+	this->swordHitboxComponent = new HitboxComponent(this->item, 20, 80, this->item.getGlobalBounds().width / 4, this->item.getGlobalBounds().height/2.f + 18, true);
+	
+}
+
 void Sword::initTexture()
 {
 	//TODO
@@ -34,8 +40,10 @@ Sword::Sword(std::string item_name, unsigned int item_level, unsigned int item_v
 	sf::Texture& item_texture)
 	:Weapon(item_name, item_level, item_value, item_weight, item_wieldable, item_consumable, item_texture)
 {
+	
 	this->initTexture();
 	this->initVars();
+	this->initHitboxComponent();
 
 	/* Set Sword Idle Range  */
 	this->swordBounds = sf::FloatRect(this->entityBounds.left, this->entityBounds.top, this->entityBounds.width * 2, this->entityBounds.height * 2);
@@ -43,7 +51,7 @@ Sword::Sword(std::string item_name, unsigned int item_level, unsigned int item_v
 
 Sword::~Sword() 
 {
-	
+	delete this->swordHitboxComponent;
 }
 
 const bool& Sword::getSwordEquipped() const
@@ -54,6 +62,16 @@ const bool& Sword::getSwordEquipped() const
 const bool& Sword::getSwordState() const
 {
 	return this->combat;
+}
+
+const sf::FloatRect Sword::getSwordHitBox() const
+{
+	if (this->swordHitboxComponent)
+	{
+		return sf::FloatRect(this->swordHitboxComponent->getHitboxGlobalBounds());
+	}
+	std::cout << "ERROR::GetSwordHitBox()::SWORD returned a 0, 0, 0, 0 float rect because no hitbox component exists\n";
+	return sf::FloatRect(0, 0, 0, 0);
 }
 
 const bool& Sword::getAttackTimer()
@@ -204,12 +222,14 @@ void Sword::rotateSword(sf::FloatRect playerBounds)
 	float rotation = (atan2(dy, dx)) * 180 / PI;
 	/* Rotate sword based on mouse position, have sword point to mouse */
 	this->item.setRotation(rotation + 315);
+	this->swordHitboxComponent->setRotation(rotation + 95);
 
 	/* Set radius of sword rotation around player */
 	float radius = 40;
 
 	/* Set position of sword based on normalized vector from above * the radius of the cirlce and centers the revolution around player's current position */
 	this->item.setPosition((vertices[1].position.x * radius) + playerPos.x, (vertices[1].position.y * radius) + playerPos.y);
+	this->updateHitbox();
 
 }
 
@@ -236,6 +256,17 @@ void Sword::floatSword()
 
 	/* Move */
 	this->item.setPosition(this->item.getPosition().x + this->swingVelocity.x, this->item.getPosition().y + this->swingVelocity.y);
+	this->updateHitbox();
+}
+
+void Sword::updateHitbox(float rotation)
+{
+	this->swordHitboxComponent->setPosition(sf::Vector2f(this->item.getPosition().x, this->item.getPosition().y));
+	
+	if (rotation >= 0)
+	{
+		this->swordHitboxComponent->setRotation(rotation);
+	}
 }
 
 void Sword::attack()
@@ -249,6 +280,7 @@ void Sword::attack()
 	if (this->isAttacking && this->combat)
 	{
 		this->item.setPosition(this->item.getPosition().x + normal_vec.x * 5, this->item.getPosition().y + normal_vec.y * 5);
+		this->updateHitbox();
 		if (this->attackTime > 15)
 		{
 			this->isAttacking = false;
@@ -276,6 +308,7 @@ void Sword::Render(sf::RenderTarget& target)
 	if (this->isEquipped) /* Draw sword if it is equipped */
 	{
 		target.draw(this->item);
+		this->swordHitboxComponent->render(target);
 	}
 	else/* Do NOT draw sword if not equipped */
 	{
