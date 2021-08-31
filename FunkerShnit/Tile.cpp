@@ -39,9 +39,10 @@ Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width,
 /* Tile constructor with a texture */
 Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, 
 	const sf::Texture& tile_texture, const sf::IntRect& texture_selector, 
-	bool collision, unsigned int type, 
+	bool collision, int collision_type,
+	unsigned int type, 
 	int enemy_type, sf::Texture* enemy_texture)
-	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(collision), type(type), animationComponent(NULL), enemyType(enemy_type)
+	:gridPosX(grid_cord_x), gridPosY(grid_cord_y), tileWidth(tile_width), tileHeight(tile_height), collison(collision), collisionType(collision_type), type(type), animationComponent(NULL), enemyType(enemy_type)
 {
 
 
@@ -59,9 +60,7 @@ Tile::Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width,
 
 	if (this->collison)
 	{
-		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX) * this->tileWidth, static_cast<float>(this->gridPosY) * this->tileHeight));
-		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight / 2));
-		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+		this->setCollisionBox(collision_type);
 	}
 
 	/* Checks if an enemy spawner is to be placed at this tile */
@@ -90,7 +89,7 @@ const std::string Tile::getTileAsString() const
 	std::stringstream ss;
 
 	ss << this->gridPosX << " " << this->gridPosY << " " << this->tileWidth << " " << this->tileHeight << " " << this->tileShape.getTextureRect().left << " "
-		<< this->tileShape.getTextureRect().top << " " << this->collison << " " << this->type << " " << this->enemyType;
+		<< this->tileShape.getTextureRect().top << " " << this->collison << " "  << this->collisionType << " " << this->type << " " << this->enemyType;
 	std::string something = ss.str();
 
 	return something;
@@ -110,6 +109,46 @@ const bool& Tile::getCollision() const
 	return this->collison;
 }
 
+void Tile::setCollisionBox(int collision_type)
+{
+	switch (collision_type)
+	{
+	case CollisionType::COVER:
+		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX) * this->tileWidth, static_cast<float>(this->gridPosY) * this->tileHeight));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight));
+		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+
+		break;
+	case CollisionType::TOP:
+		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX * this->tileWidth), static_cast<float>(this->gridPosY) * this->tileHeight));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight / 2));
+		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+
+		break;
+	case CollisionType::BOTTOM:
+		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX * this->tileWidth), static_cast<float>((this->gridPosY) * this->tileHeight) + (this->tileHeight / 2.f)));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth, this->tileHeight / 2));
+		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+
+		break;
+	case CollisionType::LEFT:
+		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>(this->gridPosX) * this->tileWidth, static_cast<float>(this->gridPosY) * this->tileHeight));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth / 2, this->tileHeight));
+		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+
+		break;
+	case CollisionType::RIGHT:
+		this->collisionBox.setPosition(sf::Vector2f(static_cast<float>((this->gridPosX * this->tileWidth) + (this->tileWidth / 2.f)), static_cast<float>(this->gridPosY) * this->tileHeight));
+		this->collisionBox.setSize(sf::Vector2f(this->tileWidth / 2, this->tileHeight));
+		this->collisionBox.setFillColor(sf::Color(255, 0, 0, 120));
+
+		break;
+	default:
+		std::cout << "ERROR::setCollisionBox(int)::TILE  invalid collision enum type. see Tile.h for enums(You rock!)";
+		break;
+	}
+}
+
 
 void Tile::Update(sf::Texture& tile_texture)
 {
@@ -127,5 +166,5 @@ void Tile::Render(sf::RenderTarget& target)
 	}
 	
 	/* draw collision box */
-	//target.draw(this->collisionBox);
+	target.draw(this->collisionBox);
 }

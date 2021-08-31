@@ -61,6 +61,13 @@ const bool& Entity::getIsAlive() const
 	return this->isAlive;
 }
 
+bool Entity::getHasAttacked()
+{
+	return this->hasAttacked;
+}
+
+
+
 const int& Entity::getHitboxOffsetY() const
 {
 	return this->hitboxComponent->offsetGridY;
@@ -131,22 +138,31 @@ void Entity::stopVelocityY()
 
 void Entity::takeDamage(int damage)
 {
+	sf::Color currColor = sf::Color(this->entity.getColor());
+	this->entity.setColor(sf::Color(255, 0, 0, 165));
 	this->health -= damage;
+	std::cout << "Took " << damage << " damage\n";
 	if (this->health <= 0)
 	{
 		this->isAlive = false;
 	}
+	this->entity.setColor(currColor);
+}
+
+void Entity::toggleAttacked()
+{
+	this->hasAttacked = !this->hasAttacked;
 }
 
 
 
 void Entity::setPosition(const float x, const float y)
 {
-	if (this->hitboxComponent)
-	{
-		this->hitboxComponent->setPosition(sf::Vector2f(x, y));
-	}
-	else
+	//if (this->hitboxComponent)
+	//{
+		//this->hitboxComponent->setPosition(sf::Vector2f(x, y));
+	//}
+	//else
 		this->entity.setPosition(x, y);
 }
 
@@ -166,6 +182,7 @@ void Entity::updateVelocity(const float& dir_x, const float& dir_y, const float&
 
 	}
 }
+
 
 void Entity::Render(sf::RenderTarget& target)
 {

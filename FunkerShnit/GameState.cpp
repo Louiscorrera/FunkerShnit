@@ -96,9 +96,9 @@ void GameState::initSounds()
 	{
 		throw "ERROR::InitSounds()::GAMESTATE could not load main music file ";
 	}
-	this->gameMusic.setVolume(35.f);
-	this->gameMusic.setLoop(true);
-	this->gameMusic.play();
+	//this->gameMusic.setVolume(35.f);
+	//this->gameMusic.setLoop(true);
+	//this->gameMusic.play();
 }
 
 

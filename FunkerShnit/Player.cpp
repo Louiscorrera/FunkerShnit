@@ -22,6 +22,8 @@ void Player::initSword()
 		/* "Sword", 3, 25, 4, true, false, &this->swordTexture, &this->entity */
 		this->sword = new Sword("Sword", 3, 25, 4, true, false, this->swordTexture);
 	}
+
+	this->hasAttacked = false;
 	
 }
 
@@ -35,7 +37,7 @@ Player::Player(float x, float y, sf::Texture& texture, int health)
 
 	this->createMovementComponent(200.f, 1100.f, 750.f);
 	this->createAnimationComponent(texture);
-	this->createHitBoxComponent(this->entity, 0.f, 0.f, 32.f, 45.f);
+	this->createHitBoxComponent(this->entity, 0.f, 0.f, 27.f, 45.f);
 	this->createSkillComponent();
 
 	this->initSword();
@@ -126,6 +128,7 @@ void Player::Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_at
 	this->updateSounds(); //Check for sound queues based off player/world actions
 	this->hitboxComponent->update(); //Updates the players hitbox based off player's sprite position
 	
+	
 	/* If sword is equipped update its position and attack style */
 	if (this->sword->getSwordEquipped())
 	{
@@ -177,6 +180,7 @@ void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int swo
 	this->sword->updateSwordRanges(this->getEntityGlobalBounds());
 	this->sword->Update(dt, mouse_pos_window);
 	this->sword->animateSword(this->getEntityGlobalBounds());
+	if (!this->sword->isAttacking) { this->toggleAttacked(); }
 }
 
 void Player::Render(sf::RenderTarget& target)

@@ -202,7 +202,7 @@ void EditorState::updateEditorInput()
 				if (this->tileMap->getCollision())
 				{
 					/* Display tile added confirmation message if tile was added */
-					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true, this->tileMap->getTileType()))
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true, this->tileMap->getCollisionType(), this->tileMap->getTileType()))
 					{
 						this->click.play(); //Click into place fx
 						this->text.setString("Tile Added!"); //attempt status displayed to user
@@ -215,7 +215,7 @@ void EditorState::updateEditorInput()
 				else /* Check if collision is disabled, add a regular tile (non-collision) if so */
 				{
 					/* Display tile added confirmation message if tile was added */
-					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, false, this->tileMap->getTileType()))
+					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, false, this->tileMap->getCollisionType(), this->tileMap->getTileType()))
 					{
 						this->click.play(); //Click into place fx
 						this->text.setString("Tile Added!"); //attempt status displayed to user
@@ -264,6 +264,15 @@ void EditorState::updateEditorInput()
 	{
 		this->tileMap->toggleCollision();
 	}
+
+	/* Toggle collision type {Cycle through enums (foudn inside tile.h) in a circular manner 
+	* Order -- Cover, Top, Bottom, Left, Right
+	*/
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_COLLISIONTYPE"))) && this->getKeyTime())
+	{
+		this->tileMap->toggleCollistionType();
+	}
+
 
 	/* Toggle Tile-to-add's type (Cycles)__See Tile.h for enum types) */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keyBinds.at("TOGGLE_TYPE"))) && this->getKeyTime())
@@ -345,6 +354,32 @@ void EditorState::updateMouseTileInfo()
 	std::stringstream ss;
 	std::string type;
 	std::string enemyType;
+	std::string collision_type;
+
+	if (this->tileMap->getCollision())
+	{
+		switch (this->tileMap->getCollisionType())
+		{
+		case CollisionType::COVER:
+			collision_type = "Cover";
+			break;
+		case CollisionType::TOP:
+			collision_type = "Top";
+			break;
+		case CollisionType::BOTTOM:
+			collision_type = "Bottom";
+			break;
+		case CollisionType::LEFT:
+			collision_type = "Left";
+			break;
+		case CollisionType::RIGHT:
+			collision_type = "Right";
+			break;
+		default:
+			break;
+		}
+	}
+
 
 	if (this->tileMap->getEnemySpawner())
 	{
@@ -374,6 +409,7 @@ void EditorState::updateMouseTileInfo()
 		"\n" << "Collision: " << ((this->tileMap->getCollision()) ? "Enabled" : "Disabled") << " (C to toggle) " <<
 		"\n" << "Type: " << type << " (V to toggle) " ;
 	if (this->tileMap->getEnemySpawner()) { ss << "\n" << "Enemy Type: " << enemyType << " (B to toggle) "; }
+	if (this->tileMap->getCollision()) { ss << "\n" << "Collision Type: " << collision_type << " (X to toggle)"; }
 
 	this->mouseTileInfo.setString(ss.str());
 	this->mouseTileInfo.setPosition(this->mousePosWindow.x + 60.f, this->mousePosWindow.y);

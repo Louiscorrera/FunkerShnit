@@ -131,7 +131,7 @@ void Sword::updateAttackTimer(const float& dt)
 {
 	if (this->attackTimer < this->attackTimerReset)
 	{
-		this->attackTimer += 100.f * dt;
+		this->attackTimer += 1000.f * dt;
 	}
 }
 

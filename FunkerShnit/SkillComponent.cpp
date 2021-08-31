@@ -41,6 +41,7 @@ std::string SkillComponent::gainExperience(int experience_amount)
 
 	if (this->toNextlevel <= 0)
 	{
+		this->updateNextLevel();
 		return this->levelUp();
 	}
 
@@ -53,6 +54,7 @@ void SkillComponent::looseExperience(int experience_amount)
 
 std::string SkillComponent::levelUp()
 {
+	
 	this->level++;
 	this->nextLevel++;
 
@@ -65,6 +67,6 @@ std::string SkillComponent::levelUp()
 
 void SkillComponent::updateNextLevel()
 {
-	this->toNextlevel = this->lastLevel * 1.15;
+	this->toNextlevel = this->lastLevel * 1.35;
 	this->lastLevel = this->toNextlevel;
 }

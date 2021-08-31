@@ -77,11 +77,12 @@ void TileMap::initTileMap(std::string texture_sheet_file)
 
 void TileMap::initVars()
 {
-	collisionEnabled = false;
-	maxTiles = 10; 
-	tileType = TileType::REGULAR; 
-	enemySpawnerEnabled = false;
-	enemyType = EnemyType::ENEMY1;
+	this->collisionEnabled = false;
+	this->collisionType = CollisionType::COVER;
+	this->maxTiles = 10; 
+	this->tileType = TileType::REGULAR; 
+	this->enemySpawnerEnabled = false;
+	this->enemyType = EnemyType::ENEMY1;
 }
 
 TileMap::TileMap(float max_size_x, float max_size_y, float max_layers, float grid_size_f)
@@ -166,6 +167,25 @@ void TileMap::toggleEnemyType()
 	
 }
 
+void TileMap::toggleCollistionType()
+{
+	if(this->collisionEnabled)
+	{
+		if (this->collisionType == CollisionType::RIGHT)
+		{
+			this->collisionType == CollisionType::COVER;
+		}
+		else
+		{
+			this->collisionType++;
+		}
+	}
+	else
+	{
+		std::cout << "Could not toggle enemy type as tile type is collision\n";
+	}
+}
+
 
 const bool& TileMap::getCollision() const
 {
@@ -185,6 +205,11 @@ const int& TileMap::getEnemyType() const
 const int& TileMap::getTileType() const
 {
 	return this->tileType;
+}
+
+const int& TileMap::getCollisionType() const
+{
+	return this->collisionType;
 }
 
 const sf::Vector2f& TileMap::getTileMapMaxSize()
@@ -278,7 +303,7 @@ void TileMap::loadTileMap(std::string filename)
 	int texture_rect_left(0), texture_rect_top(0);
 	sf::IntRect rect;
 	bool collision(false);
-	int tile_type(0), enemy_type(0);
+	int collision_type(0), tile_type(0), enemy_type(0);
 	
 	
 
@@ -292,17 +317,22 @@ void TileMap::loadTileMap(std::string filename)
 	rect.width = this->gridSizeF;
 	rect.height = this->gridSizeF;
 
-	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision >> tile_type >> enemy_type)
+	while (ifs >> layer >> grid_cord_x >> grid_cord_y >> tile_width >> tile_height >> texture_rect_left >> texture_rect_top >> collision >> collision_type >> tile_type >> enemy_type)
 	{
 		rect.left = texture_rect_left;
 		rect.top = texture_rect_top;
 		if (enemy_type >= 0)
 		{
-			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type, enemy_type, &this->enemyTextures[enemy_type]));
+			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, 
+				this->tileTextureSheet, rect, 
+				collision, collision_type, 
+				tile_type, enemy_type, &this->enemyTextures[enemy_type]));
 		}
 		else
 		{
-			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, this->tileTextureSheet, rect, collision, tile_type));
+			this->tileMap[grid_cord_x][grid_cord_y][layer].push_back(new Tile(grid_cord_x, grid_cord_y, tile_width, tile_height, 
+				this->tileTextureSheet, rect, 
+				collision, collision_type, tile_type));
 		}
 	}
 	
@@ -319,7 +349,8 @@ void TileMap::Update()
 
 bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, 
 	sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, 
-	bool collision, int tile_type)
+	bool collision, int collision_type,
+	int tile_type)
 {
 	/* Check if grid position is in the tile map & a valid position */
 	if (pos_x < this->maxSizeX && pos_x >= 0
@@ -334,17 +365,17 @@ bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, cons
 			switch (this->enemyType)
 			{
 			case EnemyType::ENEMY1:
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type, 
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, collision_type, tile_type, 
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY1]));
 				std::cout << "Added Enemy Spawner!!!\n";
 				break;
 			case EnemyType::ENEMY2:
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, collision_type, tile_type,
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY2]));
 				std::cout << "Added Enemy Spawner!!!\n";
 				break;
 			case EnemyType::ENEMY3:
-				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type,
+				this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, collision_type, tile_type,
 					this->enemyType, &this->enemyTextures[EnemyType::ENEMY3]));
 				std::cout << "Added Enemy Spawner3!!!\n";
 				break;
@@ -354,12 +385,16 @@ bool TileMap::addTile(const unsigned int& pos_x, const unsigned int& pos_y, cons
 		}
 		else
 		{
-			this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, tile_type));
+			this->tileMap[pos_x][pos_y][layer].push_back(new Tile(pos_x, pos_y, this->gridSizeF, this->gridSizeF, tile_texture_sheet, texture_selector, collision, collision_type, tile_type));
 
 		}
 			
 			return true;
 		
+	}
+	else
+	{
+		return false;
 	}
 
 }
@@ -411,7 +446,7 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 	else if (entity->getEntityGlobalBounds().top < 0)
 	{
 		entity->stopVelocityY();
-		entity->setPosition(entity->getPosition().x, 0);
+		entity->setPosition(entity->getPosition().x, 0.f);
 	}
 	/* Bottom Map Boundary */
 	else if (entity->getEntityGlobalBounds().top + entity->getEntityGlobalBounds().height > this->maxSizeY * this->gridSizeF)
@@ -471,8 +506,8 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 								&& playerBounds.left + playerBounds.width > wallBounds.left
 								&& playerBounds.top > wallBounds.top + wallBounds.height)
 							{
-								entity->stopVelocityY(); //Make this function in entity
-								entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height + .5); //Make this function in entity
+								entity->stopVelocityY();
+								entity->setPosition(playerBounds.left, wallBounds.top + wallBounds.height + 0.5); //Make this function in entity
 							}
 							//Top collision
 							else if (playerBounds.top < wallBounds.top
@@ -481,19 +516,20 @@ void TileMap::checkTileCollision(const float& dt, Entity* entity)
 								&& playerBounds.top + playerBounds.height <= wallBounds.top)
 							{
 								entity->stopVelocityY(); //Make this function in entity
-								entity->setPosition(playerBounds.left, wallBounds.top - wallBounds.height * 2); //Make this function in entity
+								entity->setPosition(playerBounds.left, wallBounds.top - playerBounds.height); 
+								
 							}
 							else {}
 
 
 							//Right Collison
 							if (playerBounds.left < wallBounds.left
-								&& playerBounds.left + playerBounds.width < wallBounds.left
+								&& playerBounds.left + playerBounds.width <= wallBounds.left
 								&& playerBounds.top < wallBounds.top + wallBounds.height
 								&& playerBounds.top + playerBounds.height > wallBounds.top)
 							{
  								entity->stopVelocity(); //Make this function in entity
-								entity->setPosition(wallBounds.left - wallBounds.width + entity->getHitboxOffsetX() - 0.5, playerBounds.top); //Make this function in entity
+								entity->setPosition(wallBounds.left - playerBounds.width - 0.3, playerBounds.top); //Make this function in entity
 							}
 							//Left Collision
 							else if (playerBounds.left > wallBounds.left

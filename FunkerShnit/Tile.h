@@ -6,6 +6,7 @@
 
 enum TileType {REGULAR = 0, COLLISION, DEFERRED, DAMAGE, ANIMATED, ENEMY};
 enum EnemyType { ENEMY1 = 0, ENEMY2, ENEMY3 };
+enum CollisionType {COVER = 0, TOP, BOTTOM, LEFT, RIGHT};
 
 class Tile
 {
@@ -22,6 +23,7 @@ private:
 	float tileHeight;
 
 	int enemyType;
+	
 
 
 	AnimationComponent* animationComponent;
@@ -37,6 +39,7 @@ public:
 
 	/* Tile Attribs */
 	bool collison;
+	int collisionType;
 	unsigned type;
 
 	/* Enemy Spawner */
@@ -49,7 +52,8 @@ public:
 	Tile(unsigned int grid_pos_x, unsigned int grid_pos_y, float tile_width, float tile_height); /* Tile constructor without a texture (Default) */
 	Tile(unsigned int grid_cord_x, unsigned int grid_cord_y, float tile_width, float tile_height, 
 		const sf::Texture& tile_texture, const sf::IntRect& texture_selector, 
-		bool collision = false, unsigned int type = 0, 
+		bool collision = false, int collision_type = CollisionType::COVER,
+		unsigned int type = 0, 
 		int enemy_type = -1, sf::Texture* enemyTexture = NULL); /* Tile constructor with a texture */
 	~Tile();
 
@@ -60,6 +64,7 @@ public:
 	const bool& getCollision() const;
 
 	/**** METHODS ****/
+	void setCollisionBox(int collision_type);
 
 	/*** Updates ***/
 	void Update(sf::Texture& tile_texture);

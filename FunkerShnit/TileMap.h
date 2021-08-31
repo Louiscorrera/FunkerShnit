@@ -32,8 +32,9 @@ private:
 	float gridSizeF;
 
 	/* Map Updates */
-	bool collisionEnabled;
 	int tileType;
+	bool collisionEnabled;
+	int collisionType;
 	
 	/* Enemy Specific */
 	bool enemySpawnerEnabled;
@@ -60,18 +61,19 @@ public:
 	~TileMap();
 
 	/**** ACCESSORS ****/
-	void toggleCollision();
-	void toggleType();
-	void toggleEnemySpawner();
-	void toggleEnemyType();
-
-
 	const bool& getCollision() const;
 	const bool& getEnemySpawner() const;
 	const int& getEnemyType() const;
 	const int& getTileType() const;
+	const int& getCollisionType() const;
 	const sf::Vector2f& getTileMapMaxSize();
-	
+
+	/**** MUTATORS ****/
+	void toggleCollision();
+	void toggleType();
+	void toggleEnemySpawner();
+	void toggleEnemyType();
+	void toggleCollistionType();
 
 	/**** METHODS ****/
 
@@ -83,11 +85,13 @@ public:
 
 	bool addTile(const unsigned int& pos_x, const unsigned int& pos_y, const float& layer, 
 		sf::Texture& tile_texture_sheet, sf::IntRect& texture_selector, 
-		bool collision = false, int tile_type = 0);
+		bool collision = false, int collision_type = CollisionType::COVER,
+		int tile_type = 0);
 	bool removeTile(const float& pos_x, const float& pos_y, const float& layer);
 	void clearCurrentMap();
 
 	void checkTileCollision(const float& dt, Entity* entity = NULL);
+	void getCollisionOffset();
 	void checkEnemySpawners(const float& dt, std::vector<Enemy*>* game_enemies, Entity* entity);
 
 	/*** Renders ***/

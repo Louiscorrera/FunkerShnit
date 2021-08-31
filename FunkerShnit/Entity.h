@@ -24,6 +24,9 @@ protected:
 	/* Trackers */
 	int health;
 	bool isAlive;
+	bool hasAttacked;
+
+	
 
 	/* Movement */
 	MovementComponent* movementComponent;
@@ -43,6 +46,8 @@ public:
 	virtual const sf::FloatRect getEntityGlobalBounds();
 	const sf::FloatRect getEntityNextBounds(const float& dt);
 	const bool& getIsAlive() const;
+	bool getHasAttacked();
+	
 
 	const int& getHitboxOffsetY() const;
 	const int& getHitboxOffsetX() const;
@@ -64,12 +69,14 @@ public:
 
 	/** Combat **/
 	void takeDamage(int damage);
+	void toggleAttacked();
 
 	/*** Updates ***/
 	/** Pure Virtuals **/
 	virtual void Update(const float& dt); //Does nothing
 	virtual void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style); //Does nothing
 	virtual void updateVelocity(const float& dir_x, const float& dir_y, const float& dt);
+	
 
 	/*** Renders ***/
 	/** Pure Virtuals **/
