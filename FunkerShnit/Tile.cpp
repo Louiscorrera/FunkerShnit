@@ -166,5 +166,5 @@ void Tile::Render(sf::RenderTarget& target)
 	}
 	
 	/* draw collision box */
-	target.draw(this->collisionBox);
+	//target.draw(this->collisionBox);
 }

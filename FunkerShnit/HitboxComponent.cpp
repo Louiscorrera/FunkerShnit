@@ -10,7 +10,7 @@ HitboxComponent::HitboxComponent(sf::Sprite& sprite, float offset_x, float offse
 	this->hitbox.setSize(sf::Vector2f(width, height));
 	if (special)
 	{
-		this->hitbox.setOrigin(this->hitbox.getGlobalBounds().width/2.f, this->hitbox.getGlobalBounds().height/2.f);
+		this->hitbox.setOrigin(this->hitbox.getGlobalBounds().width / 2.f, this->hitbox.getGlobalBounds().height / 2.f);
 	}
 	this->hitbox.setPosition(this->sprite.getPosition().x + offset_x, this->sprite.getPosition().y + offset_y);
 	this->hitbox.setFillColor(sf::Color::Transparent);
@@ -72,5 +72,5 @@ void HitboxComponent::setRotation(float rotation)
 
 void HitboxComponent::render(sf::RenderTarget& target)
 {
-	target.draw(this->hitbox);
+	//target.draw(this->hitbox);
 }

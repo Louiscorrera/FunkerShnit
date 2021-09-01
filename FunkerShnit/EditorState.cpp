@@ -204,7 +204,7 @@ void EditorState::updateEditorInput()
 					/* Display tile added confirmation message if tile was added */
 					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, true, this->tileMap->getCollisionType(), this->tileMap->getTileType()))
 					{
-						this->click.play(); //Click into place fx
+						//this->click.play(); //Click into place fx
 						this->text.setString("Tile Added!"); //attempt status displayed to user
 					}
 					else /* Display tile can't be added message if tile is full */
@@ -217,7 +217,7 @@ void EditorState::updateEditorInput()
 					/* Display tile added confirmation message if tile was added */
 					if (this->tileMap->addTile(this->mousePosGrid.x, this->mousePosGrid.y, 0, this->tileMapTextureSheet, this->textureSelector, false, this->tileMap->getCollisionType(), this->tileMap->getTileType()))
 					{
-						this->click.play(); //Click into place fx
+						//this->click.play(); //Click into place fx
 						this->text.setString("Tile Added!"); //attempt status displayed to user
 					}
 					else /* Display tile can't be added message if tile is full */

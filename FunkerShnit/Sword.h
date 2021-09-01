@@ -42,7 +42,7 @@ private:
 	float attackTimerReset;
 
 	/**** METHODS(Private) ****/
-	void initTexture();
+	void initTexture(float scale);
 	void initVars();
 	void initHitboxComponent();
 
@@ -54,7 +54,7 @@ public:
 	/**** CONSTRUCTOR | DESTRUCTOR ****/
 	Sword(std::string item_name, unsigned int item_level, unsigned int item_value, unsigned int item_weight, 
 		bool item_wieldable, bool item_consumable, 
-		sf::Texture& item_texture);
+		sf::Texture& item_texture, float scale = 1);
 	virtual ~Sword();
 
 	/**** ACCESSORS ****/

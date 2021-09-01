@@ -3,14 +3,16 @@
 
 void Sword::initHitboxComponent() {
 
-	this->swordHitboxComponent = new HitboxComponent(this->item, 20, 80, this->item.getGlobalBounds().width / 4, this->item.getGlobalBounds().height/2.f + 18, true);
+	this->swordHitboxComponent = new HitboxComponent(this->item, 0, 0, this->item.getGlobalBounds().width / 4, this->item.getGlobalBounds().height / 2, true);
 	
 }
 
-void Sword::initTexture()
+void Sword::initTexture(float scale)
 {
 	//TODO
 	/* Set the texture rect to the part of the texture that is the sword */
+
+	this->item.setScale(sf::Vector2f(scale, scale));
 
 	/* Init origin of sword to center */
 	this->item.setOrigin(this->item.getGlobalBounds().width / 2.f, this->item.getGlobalBounds().height / 2.f);
@@ -37,11 +39,11 @@ void Sword::initVars()
 
 Sword::Sword(std::string item_name, unsigned int item_level, unsigned int item_value, unsigned int item_weight, 
 	bool item_wieldable, bool item_consumable, 
-	sf::Texture& item_texture)
+	sf::Texture& item_texture, float scale)
 	:Weapon(item_name, item_level, item_value, item_weight, item_wieldable, item_consumable, item_texture)
 {
 	
-	this->initTexture();
+	this->initTexture(scale);
 	this->initVars();
 	this->initHitboxComponent();
 

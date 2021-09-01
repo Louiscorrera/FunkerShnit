@@ -20,7 +20,7 @@ void Player::initSword()
 	else
 	{
 		/* "Sword", 3, 25, 4, true, false, &this->swordTexture, &this->entity */
-		this->sword = new Sword("Sword", 3, 25, 4, true, false, this->swordTexture);
+		this->sword = new Sword("Sword", 3, 25, 4, true, false, this->swordTexture, 0.65);
 	}
 
 	this->hasAttacked = false;

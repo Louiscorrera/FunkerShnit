@@ -3,7 +3,7 @@
 
 void VampireEnemy::initComponents()
 {
-	this->createHitBoxComponent(this->entity, 0.f, 0.f, 32.f, 45.f);
+	this->createHitBoxComponent(this->entity, 15.f, 15.f, 32.f, 35.f);
 	this->createMovementComponent(20, 300, 200);
 	this->createAnimationComponent(*this->texture);
 
@@ -37,11 +37,11 @@ const sf::FloatRect VampireEnemy::getEntityGlobalBounds()
 }
 
 
-void VampireEnemy::Update(const float& dt)
+void VampireEnemy::Update(const float& dt, Player* player_to_follow)
 {
 	this->hitboxComponent->update();
 	this->updateAnimation(dt);
-	this->updateEnemyPos(dt);
+	this->updateEnemyPos(dt, player_to_follow);
 	this->checkDistanceFromSpawner();
 	
 }

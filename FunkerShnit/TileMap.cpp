@@ -173,7 +173,7 @@ void TileMap::toggleCollistionType()
 	{
 		if (this->collisionType == CollisionType::RIGHT)
 		{
-			this->collisionType == CollisionType::COVER;
+			this->collisionType = CollisionType::COVER;
 		}
 		else
 		{

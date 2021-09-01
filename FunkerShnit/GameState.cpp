@@ -183,7 +183,7 @@ void GameState::updateEnemies(const float& dt)
 		}
 		else
 		{
-			this->activeEnemies[i]->Update(dt);
+			this->activeEnemies[i]->Update(dt, this->player);
 			this->tileMap->checkTileCollision(dt, this->activeEnemies[i]);
 		}
 		
@@ -279,8 +279,9 @@ void GameState::Render(sf::RenderTarget* target)
 	target->setView(this->mainView);
 	this->renderTileMap(*target);
 	this->renderPlayer(*target);
-	this->tileMap->deferredRender(*target);
 	this->renderEnemies(*target);
+	this->tileMap->deferredRender(*target);
+	
 	
 }
 

@@ -27,7 +27,7 @@ public:
 	/**** METHODS ****/
 
 	/*** Updates ***/
-	void Update(const float& dt) override;
+	void Update(const float& dt, Player* player_to_follow) override;
 
 	void updateAnimation(const float& dt);
 	

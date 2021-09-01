@@ -66,6 +66,11 @@ bool Entity::getHasAttacked()
 	return this->hasAttacked;
 }
 
+sf::Vector2f Entity::getEntityVelocity()
+{
+	return this->movementComponent->getVelocity();
+}
+
 
 
 const int& Entity::getHitboxOffsetY() const

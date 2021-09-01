@@ -47,6 +47,7 @@ public:
 	const sf::FloatRect getEntityNextBounds(const float& dt);
 	const bool& getIsAlive() const;
 	bool getHasAttacked();
+	sf::Vector2f getEntityVelocity();
 	
 
 	const int& getHitboxOffsetY() const;
