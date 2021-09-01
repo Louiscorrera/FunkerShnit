@@ -11,7 +11,7 @@ void EnemySpawner::initVars()
 	this->spawnerActive = false;
 
 	this->spawnTimer = 0.f;
-	this->spawnTimerMax = 300.f;
+	this->spawnTimerMax = 800.f;
 }
 
 EnemySpawner::EnemySpawner(sf::Texture& enemy_texture, sf::Vector2f tile_pos, int enemy_type, int enemy_level, int enemy_amount, int max_enemy_amount)

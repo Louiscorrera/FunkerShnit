@@ -25,6 +25,7 @@ void CombatSystem::battle(Player& player, Entity& Enemy, Entity* Enemy2)
 				
 			
 			Enemy.takeDamage(damage);
+			Enemy.updateGui(damage);
 			player.toggleAttacked();
 			/* Check if enemy is dead */
 			/* If dead give player exp relative to the enemy level && loot */

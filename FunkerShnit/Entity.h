@@ -3,9 +3,10 @@
 
 #include "MovementComponent.h"
 #include "AnimationComponent.h"
-
 #include "SkillComponent.h"
 #include "Sword.h"
+
+class EntityGui;
 
 class Entity
 {
@@ -20,6 +21,7 @@ protected:
 	/**** DATA MEMBERS ****/
 	/* Graphic */
 	sf::Sprite entity;
+	EntityGui* entityGui;
 
 	/* Trackers */
 	int health;
@@ -48,6 +50,7 @@ public:
 	const bool& getIsAlive() const;
 	bool getHasAttacked();
 	sf::Vector2f getEntityVelocity();
+
 	
 
 	const int& getHitboxOffsetY() const;
@@ -77,11 +80,48 @@ public:
 	virtual void Update(const float& dt); //Does nothing
 	virtual void Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_attack_style); //Does nothing
 	virtual void updateVelocity(const float& dir_x, const float& dir_y, const float& dt);
+	void updateGui(int damage_done = 0);
 	
 
 	/*** Renders ***/
 	/** Pure Virtuals **/
 	virtual void Render(sf::RenderTarget& target);
+};
+
+
+
+class EntityGui
+{
+private:
+	/**** DATA MEMBERS ****/
+	Entity* entity;
+
+	sf::RectangleShape hpBarBackground;
+	sf::RectangleShape hpBarCurrent;
+
+	int offset;
+	int originalHealth;
+
+	/**** METHODS(Private) ****/
+	void initHpBar();
+
+protected:
+
+public:
+	/**** CONSTRUCTOR | DESTRUCTOR ****/
+	EntityGui(Entity* entity_target, int target_health);
+	virtual ~EntityGui();
+
+	/**** ACCESSORS ****/
+
+	/**** METHODS ****/
+
+	/*** Updates ***/
+	void Update(const float& dt);
+	void updateHpBar(int damage_taken);
+
+	/*** Renders ***/
+	void Render(sf::RenderTarget& target);
 };
 
 #endif // !ENTITY_H

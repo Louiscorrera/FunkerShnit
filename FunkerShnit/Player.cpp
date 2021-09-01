@@ -27,6 +27,11 @@ void Player::initSword()
 	
 }
 
+void Player::initGui()
+{
+	this->entityGui = new EntityGui(this, this->health);
+}
+
 Player::Player(float x, float y, sf::Texture& texture, int health)
 {
 	this->health = health;
@@ -34,6 +39,8 @@ Player::Player(float x, float y, sf::Texture& texture, int health)
 	this->initSounds();
 	this->setTexture(texture);
 	this->setPosition(x, y);
+
+	this->initGui();
 
 	this->createMovementComponent(200.f, 1100.f, 750.f);
 	this->createAnimationComponent(texture);
@@ -127,6 +134,7 @@ void Player::Update(const float& dt, sf::Vector2i mouse_pos_window, int sword_at
 	this->updateAnimation(dt); //check for movement and play animation sequence in accordance
 	this->updateSounds(); //Check for sound queues based off player/world actions
 	this->hitboxComponent->update(); //Updates the players hitbox based off player's sprite position
+	this->entityGui->Update(dt);
 	
 	
 	/* If sword is equipped update its position and attack style */
@@ -185,6 +193,7 @@ void Player::updateSword(const float& dt, sf::Vector2i mouse_pos_window, int swo
 
 void Player::Render(sf::RenderTarget& target)
 {
+	this->entityGui->Render(target);
 	int renderOrder = rand() % 2;
 
 	if (renderOrder == 0)

@@ -172,10 +172,15 @@ void GameState::updateTileMap(const float& dt)
 void GameState::updateEnemies(const float& dt)
 {
 	this->tileMap->checkEnemySpawners(dt, &this->activeEnemies, this->player);
+	//std::cout << this->activeEnemies.size() << "\n";
 
 	for (int i = 0; i < this->activeEnemies.size(); i++)
 	{
+
+		this->activeEnemies[i]->checkSpawnerDistanceFromPlayer(this->player);
+
 		this->combatSystem.battle(*this->player, *this->activeEnemies[i]);
+
 		if (!this->activeEnemies[i]->getIsAlive())
 		{
 			this->activeEnemies[i]->despawn();

@@ -28,6 +28,7 @@ private:
 	/**** METHODS(Private) ****/
 	void initSounds();
 	void initSword();
+	void initGui();
 
 protected:
 

@@ -4,6 +4,7 @@
 void Entity::initVars()
 {
 	this->movementComponent = NULL;
+	this->entityGui = NULL;
 	this->health = 0.f;
 }
 
@@ -17,6 +18,7 @@ Entity::~Entity()
 	delete this->animationComponent;
 	delete this->movementComponent;
 	delete this->hitboxComponent;
+	delete this->entityGui;
 	for (int i = 0; i < this->skillComponents.size(); i++)
 	{
 		delete this->skillComponents[i];
@@ -188,9 +190,61 @@ void Entity::updateVelocity(const float& dir_x, const float& dir_y, const float&
 	}
 }
 
+void Entity::updateGui(int damage_done)
+{
+	this->entityGui->updateHpBar(damage_done);
+}
+
 
 void Entity::Render(sf::RenderTarget& target)
 {
 	target.draw(this->entity);
 }
 
+
+
+
+void EntityGui::initHpBar()
+{
+	this->offset = 10;
+	this->hpBarBackground.setPosition(this->entity->getEntityGlobalBounds().left - this->offset, this->entity->getEntityGlobalBounds().top - this->offset);
+	this->hpBarBackground.setSize(sf::Vector2f(50, 10));
+	this->hpBarBackground.setFillColor(sf::Color::Black);
+
+
+	this->hpBarCurrent.setPosition(this->entity->getEntityGlobalBounds().left - this->offset, this->entity->getEntityGlobalBounds().top - this->offset);
+	this->hpBarCurrent.setSize(sf::Vector2f(50, 10));
+	this->hpBarCurrent.setFillColor(sf::Color::Red);
+}
+
+EntityGui::EntityGui(Entity* entity_target, int target_health)
+	:entity(entity_target), originalHealth(target_health)
+{
+	this->initHpBar();
+}
+
+EntityGui::~EntityGui()
+{
+	
+	
+}
+
+void EntityGui::Update(const float& dt)
+{
+	this->hpBarBackground.setPosition(this->entity->getEntityGlobalBounds().left - this->offset, this->entity->getEntityGlobalBounds().top - this->offset);
+
+	this->hpBarCurrent.setPosition(this->entity->getEntityGlobalBounds().left - this->offset, this->entity->getEntityGlobalBounds().top - this->offset);
+}
+
+void EntityGui::updateHpBar(int damage_taken)
+{
+	float percent = static_cast<float>(damage_taken) / this->originalHealth;
+	this->hpBarCurrent.setSize(sf::Vector2f(this->hpBarCurrent.getSize().x - (this->hpBarBackground.getSize().x * percent), this->hpBarCurrent.getSize().y));
+}
+
+void EntityGui::Render(sf::RenderTarget& target)
+{
+	target.draw(this->hpBarBackground);
+	target.draw(this->hpBarCurrent);
+	
+}

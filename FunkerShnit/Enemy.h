@@ -42,6 +42,8 @@ public:
 	virtual void Update(const float& dt, Player* player_to_follow); //doesnt do anything
 	virtual void updateEnemyPos(const float& dt, Player* player_to_follow);
 	void checkDistanceFromSpawner();
+	void checkSpawnerDistanceFromPlayer(Player* player);
+	
 	
 	
 	void despawn(); //Despawn the spawner

@@ -4,8 +4,10 @@
 void VampireEnemy::initComponents()
 {
 	this->createHitBoxComponent(this->entity, 15.f, 15.f, 32.f, 35.f);
-	this->createMovementComponent(20, 300, 200);
+	this->createMovementComponent(45, 300, 200); 
 	this->createAnimationComponent(*this->texture);
+
+	this->entityGui = new EntityGui(this, this->health);
 
 	/* animations */
 	this->animationComponent->addAnimation("WALK_LEFT", 10.f, 0, 1, 8, 1, 64, 64); //Update these to be more accurate
@@ -18,8 +20,9 @@ VampireEnemy::VampireEnemy(EnemySpawner* spawner, sf::Texture& vampire_sprite_sh
 	:Enemy(spawner), texture(&vampire_sprite_sheet)
 {
 	this->isAlive = true;
-	this->initComponents();
 	this->health = 5;
+	this->initComponents();
+	
 }
 
 VampireEnemy::~VampireEnemy()
@@ -43,6 +46,7 @@ void VampireEnemy::Update(const float& dt, Player* player_to_follow)
 	this->updateAnimation(dt);
 	this->updateEnemyPos(dt, player_to_follow);
 	this->checkDistanceFromSpawner();
+	this->entityGui->Update(dt);
 	
 }
 
@@ -75,4 +79,5 @@ void VampireEnemy::Render(sf::RenderTarget& target)
 {
 	target.draw(this->entity);
 	this->hitboxComponent->render(target);
+	this->entityGui->Render(target);
 }

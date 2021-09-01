@@ -100,6 +100,18 @@ void Enemy::checkDistanceFromSpawner()
 	}
 }
 
+void Enemy::checkSpawnerDistanceFromPlayer(Player* player)
+{
+	float dx = this->spawner->getSpawnerLocation().x - player->getEntityGlobalBounds().left;
+	float dy = this->spawner->getSpawnerLocation().y - player->getEntityGlobalBounds().top;
+
+	float mag = std::sqrt((dx * dx) + (dy * dy));
+	if (mag > 1200)
+	{
+		this->isAlive = false;
+	}
+}
+
 void Enemy::despawn()
 {
 	this->spawner->enemyAmount--;
